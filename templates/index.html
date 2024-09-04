@@ -1,0 +1,3320 @@
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <meta charset="UTF-8">
+    <title>Ancient War Game</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=MedievalSharp&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+</head>
+<!-- body tag all here -->
+<style>
+    body {
+        margin: 0;
+        padding: 0;
+        width: 100vw;
+        color: #f4f4f4;
+        font-family: 'MedievalSharp', serif;
+        background-color: #1a1a1a;
+        overflow-y: auto;
+        overflow-x: hidden;
+        position: relative;
+    }
+
+    .parallax-background {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-image: url('static/fire_bg.gif');
+        /* Replace with your image URL */
+        opacity: 1.7;
+        background-size: cover;
+        background-repeat: no-repeat;
+        background-position: center;
+        background-attachment: fixed;
+        z-index: 1;
+    }
+</style>
+<!-- body tag ends here -->
+
+
+
+<!-- all border  code starts here -->
+<style>
+    .border {
+        position: fixed;
+        background-size: cover;
+        z-index: 10;
+    }
+
+    .border.top {
+        top: 66px;
+        left: 0;
+        right: 0;
+        height: 50px;
+        background-image: url('static/border-top.png');
+    }
+
+    .border.bottom {
+        bottom: 0;
+        left: 0;
+        right: 0;
+        height: 50px;
+        background-image: url('static/border-top.png');
+        /* Reused and flipped */
+        transform: rotate(180deg);
+    }
+
+    .border.left {
+        top: 0;
+        left: -8px;
+        bottom: 0;
+        width: 50px;
+        background-image: url('static/border-left.png');
+    }
+
+    .border.right {
+        top: 0;
+        right: 0;
+        bottom: 0;
+        width: 50px;
+        background-image: url('static/border-left.png');
+        /* Reused and flipped */
+        transform: rotate(180deg);
+    }
+</style>
+<!-- all border codes end here -->
+
+<body class="parallax-background">
+    <!-- Border elements all sides   start here-->
+    <div class="border top"></div>
+    <div class="border bottom"></div>
+    <div class="border left"></div>
+    <div class="border right"></div>
+    <!-- border elements of all sides end shere -->
+
+
+
+    <!-- firre loading animation starts here  -->
+    <div class="fire-loader" id="loader">
+        <!-- pre loader fire animation  startsloader animation fire -->
+        <style>
+            .fire-loader {
+                width: 100%;
+                height: 100%;
+                background-image: url('static/preloader-bg.png');
+                /* Use your sprite sheet here */
+                background-size: 2300% 100%;
+                /* Adjust based on the number of frames (23 frames in this example) */
+                animation: fireAnimation 1.2s steps(23) 1;
+                /* Adjust the steps count to match the number of frames */
+                position: fixed;
+                top: 0;
+                left: 0;
+                z-index: 9999;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+            }
+
+            @keyframes fireAnimation {
+                100% {
+                    background-position: 2300% 0;
+                    /* Adjust based on the number of frames */
+                }
+            }
+        </style>
+        <!-- pre loader fire animation ends here -->
+        <script>
+            window.addEventListener('load', function () {
+                const loader = document.getElementById('loader');
+                const content = document.getElementById('content');
+                setTimeout(function () {
+                    loader.style.display = 'none';
+                    content.style.display = 'block';
+                }, 1200); // Match this duration to the length of your animation
+            });
+        </script>
+    </div>
+    <!-- fire loading animation container ends -->
+
+
+
+    <!-- completer website is inside this div container in different sections -->
+
+    <!-- navbar section starts here  -->
+    <section>
+        <nav class="navbar">
+            {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+            {% for category, message in messages %}
+            <div class="flash {{ category }}">{{ message }}</div>
+            {% endfor %}
+            {% endif %}
+            {% endwith %}
+            <div class="navbar-container">
+                <a href="{{ url_for('index') }}" class="navbar-logo">AncientWar</a>
+                <div class="search-bar">
+                    <input type="search" placeholder="Search...">
+                    <button type="button"><span class="material-icons-round">search</span></button>
+                </div>
+
+
+                <div class="visible_all">
+                    <div class="nav-icon">
+                        <a href="{{ url_for('contact') }}" class="nav-link">
+                            <span class="material-icons-round">email</span>
+                        </a>
+                    </div>
+                    <div class="nav-icon" id="user-dropdown">
+                        <span class="material-icons-round">person</span>
+                        <div class="dropdown-content">
+                            {% if current_user.is_authenticated %}
+                            <a href="#profile">{{ current_user.username }}</a>
+                            <a href="{{ url_for('logout') }}">Logout</a>
+                            {% else %}
+                            <a href="{{ url_for('login') }}">Login</a>
+                            <a href="{{ url_for('signup') }}">Signup</a>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="nav-icon">
+
+                        <a href="{{ url_for('product') }}" class="sidebar-link"> <span
+                                class="material-icons-round">shopping_cart</span></a>
+                    </div>
+                    <div class="sidebar_for_right-toggle">
+                        <span id="menu_bar_right" class="material-icons-round menu_bar">apps</span>
+                    </div>
+
+                    <div class="evnt_icon">
+                        <i class="material-icons-round event-icon menu_bar" onclick="openScroll()">chat</i>
+
+                    </div>
+                    <div class="sidebar-toggle" onclick="toggleSidebar()">
+                        <span class="material-icons-round menu_bar" id="menu_bar_icon">menu</span>
+                    </div>
+
+
+                </div>
+            </div>
+        </nav>
+        <div class="overlay" id="overlay" onclick="toggleSidebar()"></div>
+        <div class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <input type="search" placeholder="Search...">
+            </div>
+
+            <ul class="sidebar-menu">
+                <li><a href="{{ url_for('index') }}" class="sidebar-link">Home</a></li>
+                <li><a href="{{ url_for('games') }}" class="sidebar-link">Games</a></li>
+                <li><a href="{{ url_for('about') }}" class="sidebar-link">About</a></li>
+                <li><a href="{{ url_for('about') }}" class="sidebar-link">Blog</a></li>
+                {% if current_user.is_authenticated %}
+                <li><a href="/community" class="sidebar-link">Community</a></li>
+                <li><a href="/leader" class="sidebar-link">Leader Board</a></li>
+                {% else %}
+                <li><a href="javascript:void(0);" onclick="showLoginBanner();" class="sidebar-link">Community</a>
+                </li>
+                <li><a href="javascript:void(0);" onclick="showLoginBanner();" class="sidebar-link">Leader Board</a>
+                </li>
+                {% endif %}
+                <li><a href="{{ url_for('contact') }}" class="sidebar-link">Contact</a></li>
+                <li><a href="javascript:void(0);" onclick="showAdminLogin();" class="sidebar-link">Admin Panel</a>
+                </li>
+
+            </ul>
+            <div class="sidebar-icons">
+                <div class="nav-icon">
+
+                    <a href="{{ url_for('product') }}" class="sidebar-link"> <span
+                            class="material-icons-round">shopping_cart</span></a>
+                </div>
+                <div class="nav-icon">
+
+                    <a href="{{ url_for('login') }}" class="sidebar-link"><span
+                            class="material-icons-round">person</span></a>
+                </div>
+                <div class="nav-icon">
+
+                    <a href="{{ url_for('contact') }}" class="sidebar-link"><span
+                            class="material-icons-round">email</span></a>
+                </div>
+                <div class="nav-icon">
+
+                    <a href="#" class="sidebar-link"> <span class="material-icons-round"
+                            onclick="openScroll()">chat</span></a>
+                </div>
+            </div>
+        </div>
+        <div class="sidebar_for_right">
+            <h2 class="sidebar_for_right-header fadeInUp">Coming Soon!</h2>
+            <button href="{{ url_for('index') }}" class="learn-more-btn fadeInUp">Learn More</button>
+        </div>
+        <script>
+            function toggleSidebar() {
+                const sidebar = document.getElementById('sidebar');
+                const overlay = document.getElementById('overlay');
+                sidebar.classList.toggle('active');
+                overlay.classList.toggle('active');
+            }
+        </script>
+        <!-- overlay for sidebar -->
+        <div class="overlay_right"></div>
+        <script>
+            document.getElementById('menu_bar_right').addEventListener('click', function () {
+                const sidebar = document.querySelector('.sidebar_for_right');
+                const overlay = document.querySelector('.overlay_right');
+
+                sidebar.classList.toggle('active_right');
+                overlay.classList.toggle('active_right');
+
+                // Trigger animation only when sidebar is opened
+                if (sidebar.classList.contains('active_right')) {
+                    document.querySelectorAll('.fadeInUp').forEach(element => {
+                        element.style.animation = 'none';
+                        setTimeout(() => {
+                            element.style.animation = '';
+                        }, 10);
+                    });
+                }
+            });
+
+            document.querySelector('.overlay_right').addEventListener('click', function () {
+                document.querySelector('.sidebar_for_right').classList.remove('active_right');
+                document.querySelector('.overlay_right').classList.remove('active_right');
+            });
+
+
+
+
+        </script>
+        <style>
+            /**navbar slidebar left and right code start here **/
+
+
+            .navbar {
+                background-image: url('https://imgs.search.brave.com/QqDAX68QaImCAPCagL5g9V30_4SXgzWqrfrtmnQ98Do/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9tZWRp/YS50ZW5vci5jb20v/RXk5LVFKVThmcGdB/QUFBTS9hdGUlQzUl/OUYuZ2lm.gif');
+                background-size: cover;
+                background-position: center;
+                padding: 5px 0px;
+                box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+                position: fixed;
+                width: 100%;
+                top: 0;
+                z-index: 1000;
+                transition: background-color 0.3s ease;
+            }
+
+            .navbar-container {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                max-width: 1200px;
+                margin: 0 auto;
+                padding: 15px 15px;
+            }
+
+            .navbar-logo {
+                font-size: 30px;
+                color: #f4f4f4;
+                text-decoration: none;
+                font-weight: bold;
+                letter-spacing: 2px;
+                transition: transform 0.3s;
+            }
+
+            .navbar-logo:hover {
+                transform: scale(1.1);
+            }
+
+            .search-bar {
+                display: flex;
+                align-items: center;
+                background-color: #3c3c3c93;
+                border-radius: 20px;
+                padding: 5px;
+                width: 250px;
+                transition: width 0.3s ease;
+                flex-grow: 0.3;
+                max-width: 300px;
+            }
+
+            .search-bar input {
+                background: none;
+                border: none;
+                color: #f4f4f4;
+                font-size: 16px;
+                padding: 8px 10px;
+                width: 100%;
+                border-radius: 20px 0 0 20px;
+            }
+
+            .search-bar button {
+                background-color: #d4af37;
+                border: none;
+                border-radius: 0 20px 20px 0;
+                color: #f4f4f4;
+                cursor: pointer;
+                padding: 5px 15px;
+                font-size: 16px;
+                transition: background-color 0.3s ease;
+            }
+
+            .search-bar button:hover {
+                background-color: #b39830;
+            }
+
+            .navbar-icons {
+                display: flex;
+                align-items: center;
+            }
+
+            .navbar-icons .nav-icon {
+                display: flex;
+                align-items: center;
+                margin-left: 5px;
+                transition: transform 0.3s, opacity 0.3s;
+            }
+
+            .navbar-icons .nav-icon:hover {
+                transform: scale(1.2);
+                opacity: 0.8;
+            }
+
+            .navbar-icons .nav-icon .material-icons-round {
+                font-size: 28px;
+                color: #f4f4f4;
+                margin-right: 10px;
+                transition: color 0.3s ease;
+            }
+
+            .navbar-icons .nav-icon:hover .material-icons-round {
+                color: #d4af37;
+            }
+
+            .navbar-icons .nav-icon a {
+                text-decoration: none;
+                color: #f4f4f4;
+                font-size: 18px;
+                transition: color 0.3s ease;
+            }
+
+            .navbar-icons .nav-icon:hover a {
+                color: #d4af37;
+            }
+
+
+            /* Responsive Design */
+            @media (max-width: 768px) {
+                .search-bar {
+                    display: none;
+                }
+
+                .navbar-icons {
+                    display: none;
+                }
+
+                .menu_bar {
+
+
+                    font-size: 20px;
+                }
+
+
+                #menu_bar_icon {
+                    margin-bottom: 2px;
+                    font-size: 24px;
+
+                }
+
+
+                .sidebar-toggle {
+                    display: flex;
+                    margin-right: 2px;
+                }
+
+                .navbar-logo {
+                    font-size: 20px;
+
+
+                }
+            }
+
+            /**left side bar code **/
+            .sidebar {
+                position: fixed;
+                top: 0;
+                left: -100%;
+                width: 250px;
+                height: 100%;
+                background-color: rgba(0, 0, 0, 0.9);
+                background-image: url('static/bg.gif');
+                background-size: cover;
+                background-position: center;
+                box-shadow: 4px 0 10px rgba(0, 0, 0, 0.5);
+                transition: left 0.3s ease;
+                z-index: 1100;
+                display: flex;
+                flex-direction: column;
+                padding: 20px;
+            }
+
+            .sidebar.active {
+                left: 0;
+            }
+
+            .sidebar-header {
+                margin-bottom: 20px;
+            }
+
+            .sidebar-header input {
+                background: none;
+                border: none;
+                color: #f4f4f4;
+                font-size: 16px;
+                padding: 5px 10px;
+                width: calc(100% - 45px);
+                border-radius: 20px 0 0 20px;
+            }
+
+            .sidebar-header button {
+                background-color: #d4af37;
+                border: none;
+                border-radius: 0 20px 20px 0;
+                color: #f4f4f4;
+                cursor: pointer;
+                padding: 5px 15px;
+                font-size: 16px;
+                transition: background-color 0.3s ease;
+            }
+
+            .sidebar-header button:hover {
+                background-color: #b39830;
+            }
+
+            .sidebar-menu {
+                list-style: none;
+                padding: 0;
+                margin: 0;
+            }
+
+            .sidebar-menu li {
+                margin: 20px 0;
+            }
+
+            .sidebar-link {
+                color: #f4f4f4;
+                text-decoration: none;
+                font-size: 20px;
+                display: block;
+                transition: color 0.3s ease;
+            }
+
+            .sidebar-link:hover {
+                color: #d4af37;
+            }
+
+            .sidebar-icons {
+                display: flex;
+                flex-direction: row;
+                margin-right: 20px;
+                margin-top: auto;
+            }
+
+            .sidebar-icons .nav-icon {
+                margin: 35px 20px;
+            }
+
+
+
+            .sidebar-toggle {
+                font-size: 28px;
+                color: #f4f4f4;
+                cursor: pointer;
+                scale: 1.2;
+                transition: transform 0.3s;
+            }
+
+            .sidebar-toggle:hover {
+                transform: scale(1.2);
+                color: #d4af37;
+            }
+
+            .sidebar-icons .nav-icon:hover {
+                color: #d4af37;
+            }
+
+            .overlay {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background-color: rgba(0, 0, 0, 0.5);
+                display: none;
+                transition: opacity 0.3s ease;
+                z-index: 1000;
+            }
+
+            .overlay.active {
+                display: block;
+            }
+
+            .visible_all {
+                display: flex;
+                align-items: center;
+                gap: 10px;
+
+
+
+            }
+
+            /**right side bar **/
+            .sidebar_for_right {
+                position: fixed;
+                top: 0;
+                right: -100%;
+                width: 250px;
+                height: 100%;
+                background-color: rgba(0, 0, 0, 0.9);
+                background-image: url('static/comming.gif');
+                background-size: cover;
+                background-position: center;
+                box-shadow: 4px 0 10px rgba(0, 0, 0, 0.5);
+                transition: right 0.3s ease;
+                z-index: 1100;
+                display: flex;
+                justify-content: flex-end;
+                align-items: center;
+                flex-direction: column;
+                padding: 20px;
+                opacity: 0;
+                transition: right 0.3s ease, opacity 0.5s ease;
+            }
+
+            .sidebar_for_right.active_right {
+                right: 0;
+                opacity: 1;
+            }
+
+            @keyframes fadeInUp {
+                0% {
+                    opacity: 0;
+                    transform: translateY(20px);
+                }
+
+                100% {
+                    opacity: 1;
+                    transform: translateY(0);
+                }
+            }
+
+            .fadeInUp {
+                animation: fadeInUp 3s ease forwards;
+            }
+
+            .sidebar_for_right-header {
+                margin-bottom: 20px;
+                color: white;
+                font-size: 24px;
+            }
+
+            .sidebar_for_right-menu {
+                list-style: none;
+                padding: 0;
+                margin: 0;
+                text-align: center;
+            }
+
+            .sidebar_for_right-menu li {
+                margin-bottom: 20px;
+            }
+
+            .sidebar_for_right-link {
+                color: #f4f4f4;
+                text-decoration: none;
+                font-size: 20px;
+                display: block;
+                transition: color 0.3s ease;
+            }
+
+            .sidebar_for_right-link:hover {
+                color: #d4af37;
+            }
+
+            .sidebar_for_right-toggle {
+                font-size: 28px;
+                color: #f4f4f4;
+                cursor: pointer;
+                scale: 1.2;
+                transition: transform 0.3s;
+            }
+
+            .sidebar_for_right-toggle:hover {
+                transform: scale(1.2);
+                color: #d4af37;
+            }
+
+            .overlay_right {
+                position: fixed;
+                top: 0;
+                right: 0;
+                width: 100%;
+                height: 100%;
+                background-color: rgba(0, 0, 0, 0.5);
+                display: none;
+                transition: opacity 0.3s ease;
+                z-index: 1000;
+            }
+
+            .overlay_right.active_right {
+                display: block;
+            }
+
+
+
+            .learn-more-btn {
+                padding: 15px 30px;
+                font-size: 1rem;
+                color: #fff;
+                background: rgba(255, 255, 255, 0.1);
+                border: 2px solid #fff;
+                text-decoration: none;
+                transition: background-color 0.3s ease;
+                margin-top: 20px;
+                margin-bottom: 140px;
+            }
+
+            .learn-more-btn:hover {
+                background: rgba(255, 255, 255, 0.2);
+                transform: scale(1.05);
+            }
+        </style>
+
+        <!-- navbar login detail extra code for lofin dropdown menu icon -->
+        <style>
+            /* Style for nav-icon (person icon) */
+            .nav-icon {
+                position: relative;
+                display: inline-block;
+                cursor: pointer;
+            }
+
+            .nav-icon:hover {
+                color: #d4af37;
+            }
+
+            /* Style for the dropdown content */
+            .dropdown-content {
+                display: none;
+                position: absolute;
+                background-color: #333;
+                color: white;
+                min-width: 160px;
+                box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+                z-index: 1;
+                border-radius: 5px;
+            }
+
+            /* Style for links inside the dropdown */
+            .dropdown-content a {
+                color: white;
+                padding: 12px 16px;
+                text-decoration: none;
+                display: block;
+                text-align: left;
+            }
+
+            .dropdown-content a:hover {
+                background-color: #575757;
+            }
+
+            /* Show the dropdown content on hover */
+            .nav-icon:hover .dropdown-content {
+                display: block;
+            }
+
+            /* Optional: Style for mobile responsiveness */
+            @media (max-width: 600px) {
+                .dropdown-content {
+                    min-width: 120px;
+                }
+            }
+        </style>
+        <script>
+            document.addEventListener('DOMContentLoaded', (event) => {
+                const userDropdown = document.getElementById('user-dropdown');
+                const dropdownContent = userDropdown.querySelector('.dropdown-content');
+
+                // Toggle dropdown visibility on click
+                userDropdown.addEventListener('click', () => {
+                    dropdownContent.style.display = dropdownContent.style.display === 'block' ? 'none' : 'block';
+                });
+
+                // Close the dropdown if the user clicks outside of it
+                window.addEventListener('click', (event) => {
+                    if (!userDropdown.contains(event.target)) {
+                        dropdownContent.style.display = 'none';
+                    }
+                });
+            });
+        </script>
+
+        <!-- navbar login detail ectra code for lofin dropdown menu icon ends -->
+        <!-- navbar scroll opening and closing section code start  -->
+        <section>
+            <div id="scrollContainer" class="scroll-container">
+                <img id="scrollImage" class="scroll-image" src="static/open_scroll.gif" alt="Scroll Animation">
+                <button class="close-button" onclick="closeScroll()">×</button>
+                <div class="message">
+                    <span id="messageText">
+                        <h3>hello</h3><br>
+                        <p>welcome to game</p>
+                    </span>
+                </div>
+                <style>
+                    .event-icon {
+
+                        font-size: 24px;
+                        color: #f4f4f4;
+                        cursor: pointer;
+                        transition: color 0.3s ease;
+                        z-index: 1300;
+                    }
+
+                    .event-icon:hover {
+                        color: #d4af37;
+                    }
+
+                    .scroll-container {
+                        position: fixed;
+                        top: 50%;
+                        left: 50%;
+                        transform: translate(-50%, -50%);
+                        display: none;
+                        z-index: 1200;
+                        text-align: center;
+                        width: 100%;
+                        max-width: 600px;
+                    }
+
+                    .scroll-container.active {
+                        display: block;
+                    }
+
+                    .scroll-image {
+                        width: 100%;
+                        height: auto;
+                        animation: openScrollAnimation 3s forwards;
+                    }
+
+                    @keyframes openScrollAnimation {
+                        from {
+                            opacity: 0;
+                            transform: scale(0.5);
+                        }
+
+                        to {
+                            opacity: 1;
+                            transform: scale(1);
+                        }
+                    }
+
+                    .close-button {
+                        position: absolute;
+                        text-decoration: wavy;
+                        top: 10px;
+                        right: 20px;
+                        background-color: transparent;
+                        border: none;
+                        font-size: 34px;
+                        color: #f4f4f4;
+                        cursor: pointer;
+                        transition: color 0.2s ease;
+                        z-index: 1300;
+                    }
+
+                    .close-button:hover {
+                        color: #d4af37;
+                    }
+
+                    .message {
+
+                        color: #f4f4f4;
+                        font-size: 24px;
+                        margin-top: 20px;
+                        opacity: 0;
+                        animation: fadeIn 1s forwards;
+                        white-space: nowrap;
+                        overflow: hidden;
+                        position: absolute;
+                        top: 50%;
+                        left: 50%;
+                        transform: translate(-50%, -50%);
+                        width: 100%;
+                        max-width: 600px;
+                    }
+
+                    @keyframes fadeIn {
+                        from {
+                            opacity: 0;
+                        }
+
+                        to {
+                            opacity: 1;
+                        }
+                    }
+
+                    .message span {
+                        display: inline-block;
+                        width: 0;
+                        animation: typing 2s steps(30, end) forwards;
+                        animation-delay: 2s;
+                        /* Delay before typing animation starts */
+                    }
+
+                    @keyframes typing {
+                        from {
+                            width: 0;
+                        }
+
+                        to {
+                            width: 100%;
+                        }
+                    }
+                </style>
+                <script>
+
+                    function openScroll() {
+                        const scrollContainer = document.getElementById('scrollContainer');
+                        const messageSpan = document.getElementById('messageText');
+                        const scrollImage = document.getElementById('scrollImage');
+
+                        // Reset GIF to show it again
+                        scrollImage.src = 'static/open_scroll.gif';
+
+                        scrollContainer.classList.add('active');
+                        document.body.style.overflow = 'hidden';
+                        messageSpan.style.display = 'block'
+                        // Add a delay before the typing animation starts
+                        setTimeout(() => {
+                            messageSpan.style.width = '100%';
+                            // Trigger typing animation after delay
+                        }, 2000); // 2 seconds delay
+                    }
+
+                    function closeScroll() {
+                        const scrollContainer = document.getElementById('scrollContainer');
+                        const scrollImage = document.getElementById('scrollImage');
+                        const messageSpan = document.getElementById('messageText');
+
+                        // Reset the typing animation
+                        messageSpan.style.width = '0';
+                        messageSpan.style.display = 'none';
+
+                        // Change GIF source to trigger closing animation
+                        scrollImage.src = 'static/close_scroll.gif';
+
+                        setTimeout(() => {
+                            scrollContainer.classList.remove('active');
+                            document.body.style.overflow = 'auto';
+                        }, 1400); // Duration of the close animation
+                    }
+                </script>
+            </div>
+        </section>
+        <!-- navbar scroll opening and closing animation ends here -->
+
+        <!-- Admin Login Banner -->
+        <div id="adminLoginBanner" class="admin-login-banner" style="display:none;">
+            <div class="admin-login-content">
+                <span class="close-btn" onclick="closeAdminLogin()">&times;</span>
+                <h2>Admin Login</h2>
+                <form id="adminLoginForm" action="{{ url_for('login_admin') }}" method="POST">
+                    <input type="password" name="pin" id="adminPin" placeholder="Enter 5-digit PIN" maxlength="5">
+                    <button type="submit">Login</button>
+                </form>
+                <p id="error-message" style="color:red;display:none;">Invalid PIN. Please try again.</p>
+            </div>
+
+            <style>
+                /* Add your custom CSS for the modal */
+                .admin-login-banner {
+                    position: fixed;
+                    z-index: 9999;
+                    left: 0;
+                    top: 0;
+                    width: 100%;
+                    height: 100%;
+                    background-color: rgba(0, 0, 0, 0.5);
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                }
+
+                .admin-login-content {
+                    background: white;
+                    padding: 20px;
+                    border-radius: 5px;
+                    text-align: center;
+                }
+
+                .close-btn {
+                    position: absolute;
+                    top: 10px;
+                    right: 20px;
+                    font-size: 20px;
+                    cursor: pointer;
+                }
+            </style>
+            <script>function showAdminLogin() {
+                    document.getElementById("adminLoginBanner").style.display = "flex";
+                }
+
+                function closeAdminLogin() {
+                    document.getElementById("adminLoginBanner").style.display = "none";
+                }
+
+                function validateAdminPin() {
+                    var enteredPin = document.getElementById("adminPin").value;
+                    var correctPin = "12345"; // Replace with your actual PIN
+
+                    if (enteredPin === correctPin) {
+                        window.location.href = "/admin"; // Redirect to admin page
+                    } else {
+                        document.getElementById("error-message").style.display = "block";
+                    }
+                }
+            </script>
+        </div>
+
+        <!-- Admin ends here Login Banner -->
+
+        <!-- Custom Banner  that apper to ask for login first-->
+        <div id="loginBanner" class="custom-banner">
+            <div class="banner-content">
+                <p>Hello user, you need to login first to view this section.</p>
+                <a href="{{ url_for('login') }}" class="banner-button">Login</a>
+                <a href="{{ url_for('signup') }}" class="banner-button">Signup</a>
+                <span class="close-banner" onclick="closeBanner()">&times;</span>
+            </div>
+            <style>
+                /* Custom Banner Styles */
+                .custom-banner {
+                    display: none;
+                    /* Hidden by default */
+                    position: fixed;
+                    top: 50%;
+                    left: 50%;
+                    transform: translate(-50%, -50%);
+                    width: 300px;
+                    background-color: #333;
+                    color: white;
+                    padding: 20px;
+                    border-radius: 5px;
+                    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+                    z-index: 100000;
+                    text-align: center;
+                }
+
+                .banner-content p {
+                    margin-bottom: 15px;
+                }
+
+                .banner-button {
+                    display: inline-block;
+                    padding: 10px 20px;
+                    margin: 5px;
+                    background-color: #007bff;
+                    color: white;
+                    text-decoration: none;
+                    border-radius: 5px;
+                    transition: background-color 0.3s ease;
+                }
+
+                .banner-button:hover {
+                    background-color: #0056b3;
+                }
+
+                .close-banner {
+                    position: absolute;
+                    top: 5px;
+                    right: 10px;
+                    cursor: pointer;
+                    font-size: 20px;
+                }
+            </style>
+            <script>
+                function showLoginBanner() {
+                    document.getElementById('loginBanner').style.display = 'block';
+                }
+
+                function closeBanner() {
+                    document.getElementById('loginBanner').style.display = 'none';
+                }
+            </script>
+
+
+
+        </div>
+        <!-- Custom Banner  that apper to ask for login first-->
+        <!-- social media sidebar icons comming for 5 sec code here -->
+        <section>
+            <div class="social-media-sidebar">
+                <a href="https://facebook.com" target="_blank" class="social-icon facebook">
+                    <i class="fab fa-facebook-f"></i>
+                </a>
+                <a href="https://twitter.com" target="_blank" class="social-icon twitter">
+                    <i class="fab fa-twitter"></i>
+                </a>
+                <a href="https://google.com" target="_blank" class="social-icon google">
+                    <i class="fab fa-google"></i>
+                </a>
+                <style>
+                    /* Resetting default margins and paddings */
+
+
+                    .social-media-sidebar {
+                        position: fixed;
+                        left: 0;
+                        top: 50%;
+                        transform: translateY(-50%);
+                        background-color: rgba(11, 6, 6, 0.5);
+                        /* Dark grey background */
+                        border-radius: 0 5px 5px 0;
+                        /* Rounded right corners */
+                        z-index: 1000;
+                        width: 30px;
+                        /* Default width */
+                        opacity: 1;
+                        /* Initially visible */
+                        transition: opacity 0.3s ease, transform 0.3s ease;
+                        /* Smooth transitions */
+                    }
+
+                    .social-icon {
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        text-decoration: none;
+                        width: 30px;
+                        height: 30px;
+                        /* Adjusted height to fit icons */
+                        margin: 15px auto;
+                        /* Centered margin */
+                        background-color: transparent;
+                        /* Transparent background */
+                        color: #fff;
+                        /* White icons */
+                        font-size: 20px;
+                        /* Adjusted icon size */
+                        transition: color 0.3s ease;
+                    }
+
+                    .social-icon:hover {
+                        color: #f39c12;
+                        /* Yellow color on hover */
+                    }
+                </style>
+                <script>
+                    document.addEventListener('DOMContentLoaded', () => {
+                        const sidebar = document.querySelector('.social-media-sidebar');
+                        let timeout;
+
+                        function showSidebar() {
+                            clearTimeout(timeout); // Clear any previous timeout
+                            sidebar.style.opacity = '1';
+                            sidebar.style.transform = 'translateX(0)';
+                            // Reset timeout to hide the sidebar again after 5 seconds of inactivity
+                            timeout = setTimeout(hideSidebar, 5000);
+                        }
+
+                        function hideSidebar() {
+                            sidebar.style.opacity = '0';
+                            sidebar.style.transform = 'translateX(-100px)'; // Move out of view
+                        }
+
+                        // Event listeners for user activity
+                        function resetTimer() {
+                            showSidebar();
+                        }
+
+                        window.addEventListener('mousemove', resetTimer);
+                        window.addEventListener('keydown', resetTimer);
+                        window.addEventListener('scroll', resetTimer);
+                        window.addEventListener('touchstart', resetTimer);
+
+                        // Initial timeout to hide sidebar after 5 seconds of inactivity
+                        timeout = setTimeout(hideSidebar, 5000);
+                    });
+                </script>
+            </div>
+        </section>
+        <!-- social media sidebar icons comming for 5 sec code ends here -->
+        <!-- bottom to top go button code -->
+        <section>
+            <a href="#" class="back-to-top">
+                <link rel="stylesheet"
+                    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+                <i class="fas fa-chevron-up"></i>
+                <style>
+                    .back-to-top {
+                        position: fixed;
+                        bottom: 18px;
+                        right: 65px;
+                        transform: translateY(100px);
+
+
+                        /* Matching theme color */
+
+
+                        text-align: center;
+
+
+                        box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
+                        transition: opacity 0.3s ease, transform 0.3s ease;
+                        opacity: 0;
+                        z-index: 999;
+                        /* Ensure button is on top of other elements */
+                        padding: 8px 21px;
+                        font-size: 1rem;
+                        color: #fff;
+                        background: rgba(255, 255, 255, 0.1);
+                        border: 2px solid #fff;
+                        text-decoration: none;
+
+                    }
+
+                    .back-to-top:hover {
+                        background: rgba(255, 255, 255, 0.2);
+                        transform: scale(1.05);
+                        /* Darker shade on hover */
+                    }
+
+                    .back-to-top i {
+                        vertical-align: middle;
+                    }
+
+                    /* Show button when scrolled down */
+                    .back-to-top.show {
+                        opacity: 1;
+                        transform: translateY(0);
+                    }
+                </style>
+
+                <!-- Your JavaScript -->
+                <script>
+                    document.addEventListener('DOMContentLoaded', () => {
+                        const backToTopButton = document.querySelector('.back-to-top');
+
+                        // Show button when scrolled down 100px
+                        window.addEventListener('scroll', () => {
+                            if (window.scrollY > 100) {
+                                backToTopButton.classList.add('show');
+                            } else {
+                                backToTopButton.classList.remove('show');
+                            }
+                        });
+
+                        // Smooth scroll to top
+                        backToTopButton.addEventListener('click', (e) => {
+                            e.preventDefault();
+                            window.scrollTo({
+                                top: 0,
+                                behavior: 'smooth'
+                            });
+                        });
+                    });
+                </script>
+            </a>
+        </section>
+        <!-- bottom to top go button -->
+
+
+    </section>
+    <!-- navbar secruin ends here -->
+    <div class="content">
+       
+        <!-- hero sections starts here -->
+        <section class="hero">
+            <div class="hero-bg"></div>
+            
+            <div class="smoke-overlay"></div> <!-- Smoke overlay -->
+            <div class="hero-content">
+                
+                
+                <h1>Godlike</h1>
+                <p>Enter the world of epic adventures and endless possibilities. Unleash your potential and become a
+                    true
+                    legend.</p>
+                <div class="hero-buttons">
+                    <a href="#" class="btn">Play Now</a>
+                    <a href="#" class="btn">Learn More</a>
+                </div>
+            </div>
+
+            <style>
+                .hero {
+                    position: relative;
+                    height: 100vh;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    text-align: center;
+                    background-color: #000;
+                    overflow: hidden;
+                }
+
+                .hero-bg {
+                    position: absolute;
+                    top: 0;
+                    left: 0;
+                    width: 100vw;
+                    height: 100vh;
+                    background-image: url('static/kingdom.jpg');
+                    /* Replace with your image URL */
+                    opacity: 0.7;
+                    background-size: cover;
+                    background-repeat: no-repeat;
+                    background-position: center;
+                    background-attachment: fixed;
+                    z-index: 2;
+                }
+
+                .smoke-overlay {
+                    position: absolute;
+                    top: 0;
+                    left: 0;
+                    width: 100vw;
+                    height: 100vh;
+                    background: url('static/smoke.gif') no-repeat center center;
+                    /* Replace with your smoke GIF URL */
+                    background-size: cover;
+                    opacity: 0.4;
+                    /* Adjust opacity as needed */
+                    z-index: 2;
+                    pointer-events: none;
+                    /* Ensures the overlay doesn't block interactions */
+                }
+
+                .hero-content {
+                    max-width: 800px;
+                    padding: 20px;
+                    z-index: 3;
+                }
+
+                .hero-content h1 {
+                    font-size: 4rem;
+                    font-weight: 700;
+                    margin-bottom: 20px;
+                    animation: fadeInUp 3s ease;
+                }
+
+                .hero-content p {
+                    font-size: 1.2rem;
+                    margin-bottom: 30px;
+                    animation: fadeInUp 3.5s ease;
+                }
+
+                .hero-buttons {
+                    display: flex;
+                    justify-content: center;
+                    gap: 20px;
+                    animation: fadeInUp 4s ease;
+                }
+
+                .btn {
+                    padding: 15px 30px;
+                    font-size: 1rem;
+                    color: #fff;
+                    background: rgba(255, 255, 255, 0.1);
+                    border: 2px solid #fff;
+                    text-decoration: none;
+                    transition: all 0.3s ease;
+                }
+
+                .btn:hover {
+                    background: rgba(255, 255, 255, 0.2);
+                    transform: scale(1.05);
+                }
+
+                @keyframes fadeInUp {
+                    0% {
+                        opacity: 0;
+                        transform: translateY(20px);
+                    }
+
+                    100% {
+                        opacity: 1;
+                        transform: translateY(0);
+                    }
+                }
+
+                /* Responsive Design */
+                @media (max-width: 768px) {
+                    .hero-content h1 {
+                        font-size: 3rem;
+                    }
+
+                    .hero-content p {
+                        font-size: 1rem;
+                    }
+
+                    .btn {
+                        padding: 12px 24px;
+                        font-size: 0.9rem;
+                    }
+                }
+
+                @media (max-width: 480px) {
+                    .hero-content h1 {
+                        font-size: 2.5rem;
+                    }
+
+                    .hero-content p {
+                        font-size: 0.9rem;
+                    }
+
+                    .btn {
+                        padding: 10px 20px;
+                        font-size: 0.8rem;
+                    }
+                }
+            </style>
+
+            <script>
+                window.addEventListener('scroll', function () {
+                    const heroBg = document.querySelector('.hero-bg');
+                    const offset = window.scrollY * 0.18;
+                    heroBg.style.backgroundPositionY = `${offset}px`;
+                });
+            </script>
+        </section>
+        <!-- hero section ends here -->
+
+
+        <!-- image slider start here with 3 image  -->
+        <section class="image_slider">
+            <h1 class="slider-heading">Gallery</h1> <!-- New heading added here -->
+            <div></div>
+            <div class="image_slider_container">
+                <input type="radio" name="slider" id="item-1" checked>
+                <input type="radio" name="slider" id="item-2">
+                <input type="radio" name="slider" id="item-3">
+
+                <div class="image_slider_cards">
+                    <label class="image_slider_card" for="item-1" id="song-1">
+                        <img src="{{ url_for('static', filename='image-1.jpg') }}" alt="Image 1">
+                    </label>
+                    <label class="image_slider_card" for="item-2" id="song-2">
+                        <img src="{{ url_for('static', filename='image-2.jpg') }}" alt="Image 2">
+                    </label>
+                    <label class="image_slider_card" for="item-3" id="song-3">
+                        <img src="{{ url_for('static', filename='image-1.jpg') }}" alt="Image 3">
+                    </label>
+                </div>
+            </div>
+            <style>
+                .image_slider {
+                    position: relative;
+                    overflow: hidden;
+                    height: 60vh;
+                    /* Full viewport height */
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    bottom: 30px;
+
+                }
+
+                #song-1 {
+
+                    background-image: url('static/image-1.jpg');
+                }
+
+                #song-1 {
+
+                    background-image: url('static/image-2.jpg');
+                }
+
+                #song-1 {
+
+                    background-image: url('static/image-2.jpg');
+                }
+
+
+
+                .slider-heading {
+                    position: absolute;
+                    top: 380px;
+                    /* Adjust this value to position the heading */
+
+                    transform: translateX(-50%);
+                    font-size: 2rem;
+                    color: white;
+                    text-align: center;
+                    z-index: 4;
+                    animation: fadeInUp 4s ease forwards;
+                }
+
+                .slider-heading:hover {
+                    color: #d4af37;
+                }
+
+                .image_slider_container {
+                    width: 100%;
+                    max-width: 1200px;
+                    height: 100%;
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    position: relative;
+                    animation: fadeInUp 4s ease forwards;
+                    z-index: 3;
+                }
+
+                .image_slider_cards {
+                    position: relative;
+                    width: 100%;
+                    height: 100%;
+                    margin-bottom: 20px;
+                    display: flex;
+                    justify-content: center;
+                }
+
+                .image_slider_card {
+                    position: absolute;
+                    width: 60%;
+                    height: 100%;
+                    left: 0;
+                    right: 0;
+                    margin: auto;
+                    box-shadow: rgba(0, 0, 0, 0.17) 0px -23px 25px 0px inset, rgba(0, 0, 0, 0.15) 0px -36px 30px 0px inset, rgba(0, 0, 0, 0.1) 0px -79px 40px 0px inset, rgba(0, 0, 0, 0.06) 0px 2px 1px, rgba(0, 0, 0, 0.09) 0px 4px 2px, rgba(0, 0, 0, 0.09) 0px 8px 4px, rgba(0, 0, 0, 0.09) 0px 16px 8px, rgba(0, 0, 0, 0.09) 0px 32px 16px;
+                    transition: transform .4s ease, opacity .4s ease;
+                    cursor: pointer;
+                    z-index: 0;
+                }
+
+                .image_slider_card img {
+                    width: 100%;
+                    height: 100%;
+                    border-radius: 10px;
+                    object-fit: cover;
+                }
+
+                input[type=radio] {
+                    display: none;
+                }
+
+                #item-1:checked~.image_slider_cards #song-3,
+                #item-2:checked~.image_slider_cards #song-1,
+                #item-3:checked~.image_slider_cards #song-2 {
+                    transform: translateX(-40%) scale(.8);
+                    opacity: .6;
+                    z-index: 0;
+                }
+
+                #item-1:checked~.image_slider_cards #song-2,
+                #item-2:checked~.image_slider_cards #song-3,
+                #item-3:checked~.image_slider_cards #song-1 {
+                    transform: translateX(40%) scale(.8);
+                    opacity: .6;
+                    z-index: 0;
+                }
+
+                #item-1:checked~.image_slider_cards #song-1,
+                #item-2:checked~.image_slider_cards #song-2,
+                #item-3:checked~.image_slider_cards #song-3 {
+                    transform: translateX(0) scale(1);
+                    opacity: 1;
+                    z-index: 1;
+                }
+
+                @media (max-width: 600px) {
+                    .image_slider {
+                        height: 35vh;
+                    }
+
+                    .image_slider_card {
+                        width: 60vw;
+
+                    }
+
+                    .slider-heading {
+                        top: 205px;
+                    }
+                }
+
+                @keyframes fadeInUp {
+                    from {
+                        opacity: 0;
+                        transform: translateY(20px);
+                    }
+
+                    to {
+                        opacity: 1;
+                        transform: translateY(0);
+                    }
+                }
+            </style>
+
+        </section>
+        <!-- image slider ends here with 3 image  -->
+
+
+        <!-- details ,features,  about  section starts from herer they have combined hatml css and js  -->
+        <section id="features" class="features-section">
+            <div class="container">
+                <div class="row">
+                    <div class="col-lg-4 col-md-6 feature-box">
+                        <div class="feature-icon">
+                            <i class="material-icons" style="font-size: 50px">star_border</i>
+                        </div>
+                        <h3 class="feature-title">Incredible Atmosphere</h3>
+                        <p class="feature-description">Experience immersive environments with stunning visual effects.
+                        </p>
+                    </div>
+                    <div class="col-lg-4 col-md-6 feature-box">
+                        <div class="feature-icon">
+                            <i class="material-icons" style="font-size: 45px">security</i>
+                        </div>
+                        <h3 class="feature-title">Catchy Battles</h3>
+                        <p class="feature-description">Engage in intense, action-packed battles with strategic gameplay.
+                        </p>
+                    </div>
+                    <div class="col-lg-4 col-md-6 feature-box">
+                        <div class="feature-icon">
+                            <i class="material-icons" style="font-size: 45px">emoji_events</i>
+                        </div>
+                        <h3 class="feature-title">28 Awards</h3>
+                        <p class="feature-description">Recognized globally with 28 prestigious awards.</p>
+                    </div>
+                </div>
+            </div>
+            <style>
+                .features-section {
+                    background-color: #22222200;
+                    padding: 80px 20px;
+                    color: #fff;
+                    text-align: center;
+
+                }
+
+                .feature-box {
+                    margin-bottom: 40px;
+
+                }
+
+                .feature-icon {
+                    font-size: large;
+                    /* Adjust this value to increase or decrease the size */
+                    color: #f39c12;
+                    margin-bottom: 20px;
+                }
+
+                .feature-icon i {
+                    transition: transform 0.3s ease;
+                }
+
+                .material-icons {
+                    font-size: 330px;
+                }
+
+                .feature-icon i:hover {
+                    transform: scale(1.1);
+                }
+
+                .feature-title {
+                    font-size: 24px;
+                    font-weight: 700;
+                    margin-bottom: 15px;
+                    text-transform: uppercase;
+                }
+
+                .feature-description {
+                    font-size: 16px;
+                    line-height: 1.6;
+                    color: #bbb;
+                }
+
+                @media (max-width: 768px) {
+                    .feature-box {
+                        margin-bottom: 30px;
+                    }
+
+                    .feature-title {
+                        font-size: 20px;
+                    }
+                }
+
+                @media (min-width: 992px) {
+                    .feature-box {
+                        display: flex;
+                        flex-direction: column;
+                        align-items: center;
+                    }
+                }
+            </style>
+
+        </section>
+        <!-- gradient color live color style in down extra div -->
+        <section id="about-me" class="about-me-section">
+            <div class="about-me-content">
+                <div class="about-me-text">
+                    <h1>About Me</h1>
+                    <h2>Frontend Developer</h2>
+                    <p>
+                        I'm Vivek Tripathi, a dedicated college student and aspiring developer with a passion for
+                        technology. As a full-stack, web, app, and software developer, I specialize in creating
+                        innovative solutions that combine creativity with advanced technology. Proficient in the MERN
+                        stack, I've developed dynamic web applications and intuitive mobile apps, always striving to
+                        enhance user experiences. My solid grasp of software engineering principles allows me to design
+                        scalable and robust software solutions. I'm committed to continuous learning and delivering
+                        impactful projects that make a difference.
+                    </p>
+                    <a href="#" class="read-more-btn">Read More</a>
+                </div>
+                <div class="about-me-image moving-border">
+                    <img id="img_bg" src="{{ url_for('static', filename='kingdom.jpg') }}" alt="Profile Picture">
+                </div>
+            </div>
+            <div class="curly-shape1"></div>
+            <div class="curly-shape2"></div>
+            <style>
+                /* Section Styling */
+                .about-me-section {
+                    position: relative;
+                    background-color: #0c0e1169;
+                    padding: 80px 20px;
+                    color: #fff;
+                    overflow: hidden;
+                }
+
+                #img_bg {
+                    width: 100%;
+                }
+
+                /* Curly Shape Effect */
+                .curly-shape1,
+                .curly-shape2 {
+                    position: absolute;
+                    width: 300px;
+                    height: 300px;
+                    background: rgba(218, 42, 42, 0.275);
+                    border-radius: 50%;
+                    transform: rotate(-30deg);
+                    z-index: 0;
+                    opacity: 0.6;
+                }
+
+                .curly-shape1 {
+                    top: 0px;
+                    left: -150px;
+                }
+
+                .curly-shape2 {
+                    bottom: 0px;
+                    right: -150px;
+                }
+
+                /* Content Styling */
+                .about-me-content {
+                    display: flex;
+                    flex-direction: row;
+                    align-items: center;
+                    max-width: 1200px;
+                    margin: 0 auto;
+                    position: relative;
+                    z-index: 1;
+                    gap: 40px;
+                }
+
+                /* Text Styling */
+                .about-me-text {
+                    flex: 1;
+                    max-width: 600px;
+                    animation: fadeInUp 1s ease-out;
+                }
+
+                .about-me-text h1 {
+                    font-size: 3em;
+                    margin-bottom: 10px;
+                    color: #b39830;
+                    animation: bounceIn 1s ease-out;
+                }
+
+                .about-me-text h2 {
+                    font-size: 2em;
+                    margin-bottom: 20px;
+                    color: #e0f2f1;
+                }
+
+                .about-me-text p {
+                    font-size: 1em;
+                    line-height: 1.6;
+                    margin-bottom: 20px;
+                }
+
+                .read-more-btn {
+                    display: inline-block;
+                    padding: 12px 25px;
+                    font-size: 1rem;
+                    color: #fff;
+                    background: rgba(255, 255, 255, 0.1);
+                    border: 2px solid #fff;
+                    text-decoration: none;
+                    transition: all 0.3s ease;
+                }
+
+                .read-more-btn:hover {
+                    background: rgba(255, 255, 255, 0.2);
+                    transform: scale(1.05);
+                }
+
+                /* Image Styling with Animated Border */
+                .about-me-image {
+                    flex: 1;
+                    max-width: 437px;
+                    position: relative;
+
+                }
+
+                .about-me-image .moving-border img  {
+                    width: 70%;
+                    height: auto;
+                    border-radius: 35px;
+                    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
+                }
+
+                /* Animation Effects */
+                @keyframes bounceIn {
+                    0% {
+                        opacity: 0;
+                        transform: translateY(-50px);
+                    }
+
+                    50% {
+                        opacity: 1;
+                        transform: translateY(10px);
+                    }
+
+                    100% {
+                        opacity: 1;
+                        transform: translateY(0);
+                    }
+                }
+
+                @keyframes fadeInUp {
+                    0% {
+                        opacity: 0;
+                        transform: translateY(50px);
+                    }
+
+                    100% {
+                        opacity: 1;
+                        transform: translateY(0);
+                    }
+                }
+
+                .about-me-image:hover {
+                    scale: 1.03;
+                }
+
+                /* Responsive Styles */
+                @media (max-width: 768px) {
+                    .about-me-content {
+                        flex-direction: column;
+                        text-align: center;
+                    }
+
+                    .about-me-text h1 {
+                        font-size: 2.5em;
+                    }
+
+                    .about-me-text h2 {
+                        font-size: 1.8em;
+                    }
+
+                    .about-me-text p {
+                        font-size: 0.9em;
+                    }
+
+                    .about-me-image {
+                        flex: 1;
+                        max-width: 267px;
+                        position: relative;
+                    }
+
+
+                    .read-more-btn {
+                        padding: 10px 20px;
+                        font-size: 0.9em;
+                    }
+
+                    .about-me-image img {
+                        max-width: 100%;
+
+                    }
+                }
+            </style>
+
+        </section>
+        <section id="counter" class="counter-section">
+            <div class="container">
+                <div class="row">
+                    <div class="col-lg-3 col-md-6 counter-box">
+                        <h3 class="counter-number" data-count="150">0</h3>
+                        <p class="counter-title">Happy Players</p>
+                    </div>
+                    <div class="col-lg-3 col-md-6 counter-box">
+                        <h3 class="counter-number" data-count="75">0</h3>
+                        <p class="counter-title">Levels Completed</p>
+                    </div>
+                    <div class="col-lg-3 col-md-6 counter-box">
+                        <h3 class="counter-number" data-count="28">0</h3>
+                        <p class="counter-title">Awards Won</p>
+                    </div>
+                    <div class="col-lg-3 col-md-6 counter-box">
+                        <h3 class="counter-number" data-count="100">0</h3>
+                        <p class="counter-title">Achievements</p>
+                    </div>
+                </div>
+            </div>
+            <style>
+                .counter-section {
+                    background-color: #0e0f0f00;
+                    padding: 60px 20px;
+                    color: #fff;
+                    text-align: center;
+
+                }
+
+                .counter-box {
+                    margin-bottom: 40px;
+                    transition: transform 0.3s ease;
+                }
+
+                .counter-box:hover {
+                    transform: scale(1.05);
+                }
+
+                .counter-number {
+                    font-size: 48px;
+                    font-weight: 700;
+                    margin-bottom: 10px;
+                    color: #f39c12;
+                }
+
+                .counter-title {
+                    font-size: 16px;
+                    text-transform: uppercase;
+                    color: #bbb;
+                }
+
+                @media (max-width: 768px) {
+                    .counter-box {
+                        margin-bottom: 30px;
+                    }
+
+                    .counter-number {
+                        font-size: 36px;
+                    }
+                }
+
+                @media (min-width: 992px) {
+                    .row {
+                        display: flex;
+                        justify-content: space-around;
+                    }
+                }
+            </style>
+            <script>
+                document.addEventListener('DOMContentLoaded', () => {
+                    const counters = document.querySelectorAll('.counter-number');
+                    counters.forEach(counter => {
+                        counter.innerText = '0';
+                        const updateCounter = () => {
+                            const target = +counter.getAttribute('data-count');
+                            const c = +counter.innerText;
+
+                            // Reduced increment for slower counting
+                            const increment = target / 2000; // Increase denominator for slower effect
+
+                            if (c < target) {
+                                counter.innerText = `${Math.ceil(c + increment)}`;
+                                setTimeout(updateCounter, 50); // Increased delay for slower effect
+                            } else {
+                                counter.innerText = target;
+                            }
+                        };
+
+                        updateCounter();
+                    });
+                });
+            </script>
+
+        </section>
+        <!-- details , section ends from herer they have combined hatml css and js  -->
+
+
+        <!-- tounamenet section start here  -->
+        <section class="tournament">
+            <div class="tournament-bg"></div>
+            <!-- Overlay for visual effect -->
+            <div class="tournament-content">
+                <h1>Tournament 2024</h1>
+                <p>Join the ultimate battle of skills and strategy. Compete with the best and claim your victory!</p>
+                <div class="countdown">
+                    <p id="countdown-timer"></p>
+                </div>
+                <div class="tournament-buttons">
+                    <a href="#register" class="btn">Register Now</a>
+                    <a href="#schedule" class="btn">View Schedule</a>
+                </div>
+            </div>
+            <style>
+                .tournament {
+                    position: relative;
+                    height: 100vh;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    text-align: center;
+                    background-color: #00000000;
+                    overflow: hidden;
+                }
+
+                .tournament-bg {
+                    position: absolute;
+                    top: 0;
+                    left: 0;
+                    width: 100%;
+                    height: 100%;
+                    background-image: url('static/tournament-bg.gif');
+                    /* Replace with your image URL */
+                    background-size: cover;
+                    background-repeat: no-repeat;
+                    background-position: center;
+                    opacity: 0.5;
+                    z-index: 2;
+                }
+
+
+
+                .tournament-content {
+                    max-width: 800px;
+                    padding: 20px;
+                    z-index: 3;
+                }
+
+                .tournament-content h1 {
+                    font-size: 4rem;
+                    font-weight: 700;
+                    margin-bottom: 20px;
+                    animation: fadeInUp 3s ease;
+                }
+
+                .tournament-content p {
+                    font-size: 2rem;
+                    margin-bottom: 30px;
+                    animation: fadeInUp 3.5s ease;
+                }
+
+                .countdown {
+                    font-size: 1.5rem;
+                    margin-bottom: 30px;
+                    animation: fadeInUp 4s ease;
+                }
+
+                .tournament-buttons {
+                    display: flex;
+                    justify-content: center;
+                    gap: 20px;
+                    animation: fadeInUp 4.5s ease;
+                }
+
+                .btn {
+                    padding: 15px 30px;
+                    font-size: 1rem;
+                    color: #fff;
+                    background: rgba(255, 255, 255, 0.1);
+                    border: 2px solid #fff;
+                    text-decoration: none;
+                    transition: all 0.3s ease;
+                }
+
+                .btn:hover {
+                    background: rgba(255, 255, 255, 0.2);
+                    transform: scale(1.05);
+                }
+
+                @keyframes fadeInUp {
+                    0% {
+                        opacity: 0;
+                        transform: translateY(20px);
+                    }
+
+                    100% {
+                        opacity: 1;
+                        transform: translateY(0);
+                    }
+                }
+
+                /* Responsive Design */
+                @media (max-width: 768px) {
+                    .tournament-content h1 {
+                        font-size: 3rem;
+                    }
+
+                    .tournament-content p {
+                        font-size: 1rem;
+                    }
+
+                    .btn {
+                        padding: 12px 24px;
+                        font-size: 0.9rem;
+                    }
+
+                    .tournament-bg {
+
+
+                        background-image: url('static/comming.webp');
+                        /* Replace with your image URL */
+
+                    }
+                }
+
+                @media (max-width: 480px) {
+                    .tournament-content h1 {
+                        font-size: 2.5rem;
+                    }
+
+                    .tournament-content p {
+                        font-size: 0.9rem;
+                    }
+
+                    .btn {
+                        padding: 10px 20px;
+                        font-size: 0.8rem;
+                    }
+                }
+            </style>
+            <script>
+                document.addEventListener('DOMContentLoaded', function () {
+                    function updateCountdown() {
+                        const countdownElement = document.getElementById('countdown-timer');
+                        const targetDate = new Date('2024-12-31T23:59:59'); // Set your target date
+                        const now = new Date();
+                        const timeDiff = targetDate - now;
+
+                        if (timeDiff <= 0) {
+                            countdownElement.textContent = 'The tournament has begun!';
+                            return;
+                        }
+
+                        const days = Math.floor(timeDiff / (1000 * 60 * 60 * 24));
+                        const hours = Math.floor((timeDiff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                        const minutes = Math.floor((timeDiff % (1000 * 60 * 60)) / (1000 * 60));
+                        const seconds = Math.floor((timeDiff % (1000 * 60)) / 1000);
+
+                        countdownElement.textContent = `${days}d ${hours}h ${minutes}m ${seconds}s`;
+                    }
+
+                    setInterval(updateCountdown, 1000);
+                });
+
+            </script>
+        </section>
+        <!-- tournament section code ends here -->
+
+
+        <section id="game_info_section" class="game-info-section">
+            <div class="game-intro">
+                <h2>About This Game</h2>
+                <img src="https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/702320/extras/MoE_Steam23_kingdom.png?t=1724742169" alt="Game Kingdom" class="game-intro-image">
+                <p>
+                    Step into a medieval world of epic battles and strategic warfare. Fortify your castle, command powerful armies, and conquer rivals to claim your throne. Are you ready to unite the land under your banner or watch it crumble?
+                </p>
+            </div>
+        
+            <div class="game-features">
+                <div class="game-feature-card">
+                    <img src="https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/702320/extras/MoE_Steam23_faction.png?t=1724742169" alt="Faction" class="feature-image">
+                    <h3>Choose Your Faction</h3>
+                    <p>Select from unique factions like Shogun, Highland King, Northern Tsar, or Desert Sultan, each with its own strengths and playstyles.</p>
+                </div>
+        
+                <div class="game-feature-card">
+                    <img src="https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/702320/extras/MoE_Steam23_domination.png?t=1724742169" alt="Domination" class="feature-image">
+                    <h3>Dominate and Conquer</h3>
+                    <p>Expand your influence, unlock powerful bonuses, and fortify your defenses. Rise to become the High King through strategic conquests!</p>
+                </div>
+        
+                <div class="game-feature-card">
+                    <img src="https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/702320/extras/MoE_Steam23_forge.png?t=1724742169" alt="Forge" class="feature-image">
+                    <h3>Forge Your Legacy</h3>
+                    <p>Assemble a unique Champion, equip them with legendary gear, and lead heroic quests to build a prosperous kingdom.</p>
+                </div>
+        
+                <div class="game-feature-card">
+                    <img src="https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/702320/extras/MoE_Steam23_nation.png?t=1724742169" alt="Nation" class="feature-image">
+                    <h3>Build Your Nation</h3>
+                    <p>Develop regional structures, create thriving Trade Centres, and manage treasure Stockpiles to ensure your nation’s prosperity.</p>
+                </div>
+        
+                <div class="game-feature-card">
+                    <img src="https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/702320/extras/MoE_Steam23_warfire.png?t=1724742169" alt="Warfare" class="feature-image">
+                    <h3>Strategic Warfare</h3>
+                    <p>Employ tactical formations and adapt to seasonal changes to outmaneuver your opponents and secure victory.</p>
+                </div>
+        
+                <div class="game-feature-card">
+                    <img src="https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/702320/extras/MoE_Steam23_command.png?t=1724742169" alt="Command" class="feature-image">
+                    <h3>Command Your Alliance</h3>
+                    <p>Organize alliances, engage in diplomacy, and strategize with other players to achieve your goals and rise to power.</p>
+                </div>
+        
+                <div class="game-feature-card">
+                    <img src="https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/702320/extras/MoE_Steam23_claim.png?t=1724742169" alt="Claim" class="feature-image">
+                    <h3>Claim the Thrones</h3>
+                    <p>Capture and control key castles, each providing unique advantages. Engage in diplomacy and policy-making to shape the realm.</p>
+                </div>
+            </div>
+        
+            <div class="game-cta">
+                <p>Only one alliance can hold the ultimate power. Download now and start your journey to the throne!</p>
+                <a href="#" class="cta-button">Download Now</a>
+            </div>
+             
+        <style>
+         
+        
+            section#game_info_section {
+                background: rgba(20, 20, 20, 0.3); /* Dark semi-transparent background */
+                color: #f4f4f4;
+                padding: 2rem;
+                border-radius: 12px;
+                box-shadow: 0 8px 16px rgba(0, 0, 0, 0.5);
+                max-width: 1200px;
+                margin: auto;
+              
+                position: relative;
+                z-index: 1;
+            }
+        
+            .game-intro {
+                text-align: center;
+                margin-bottom: 2rem;
+            }
+        
+            .game-intro-image {
+                max-width: 100%;
+                height: auto;
+                border-radius: 12px;
+                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+                animation: fadeIn 1s ease-out;
+            }
+        
+            .game-intro p {
+                font-size: 1.1rem;
+                line-height: 1.6;
+                margin-top: 1rem;
+                max-width: 800px;
+                margin-left: auto;
+                margin-right: auto;
+                animation: slideIn 1s ease-out;
+            }
+        
+            .game-features {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 1.5rem;
+                justify-content: center;
+            }
+        
+            .game-feature-card {
+                background: rgba(30, 30, 30, 0.6); /* Dark semi-transparent card background */
+                border-radius: 12px;
+                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+                overflow: hidden;
+                transition: transform 0.3s ease, box-shadow 0.3s ease;
+                width: 100%;
+                max-width: 300px;
+                text-align: center;
+                padding: 1rem;
+                animation: zoomIn 1s ease-out;
+            }
+        
+            .game-feature-card:hover {
+                transform: translateY(-5px);
+                box-shadow: 0 8px 16px rgba(0, 0, 0, 0.5);
+            }
+        
+            .feature-image {
+                width: 100%;
+                height: auto;
+                border-bottom: 2px solid #f0c75e; /* Gold accent color */
+                border-radius: 8px;
+                animation: fadeIn 1s ease-out;
+            }
+        
+            .game-feature-card h3 {
+                font-size: 1.25rem;
+                color: #f0c75e; /* Gold accent color */
+                margin: 1rem 0;
+                animation: fadeInUp 1s ease-out;
+            }
+        
+            .game-feature-card p {
+                font-size: 1rem;
+                line-height: 1.5;
+                color: #d1d1d1; /* Light grey text color */
+                animation: fadeInUp 1s ease-out;
+            }
+        
+            .game-cta {
+                text-align: center;
+                margin-top: 3rem;
+                animation: fadeInUp 1s ease-out;
+            }
+        
+            .game-cta p {
+                font-size: 1.2rem;
+                margin-bottom: 1rem;
+            }
+        
+            .cta-button {
+                background-color: #f0c75e; /* Gold accent color */
+                color: #fff;
+                padding: 1rem 2rem;
+                text-decoration: none;
+                border-radius: 8px;
+                font-size: 1.25rem;
+                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+                transition: background-color 0.3s ease, transform 0.3s ease;
+                animation: bounceIn 1s ease-out;
+            }
+        
+            .cta-button:hover {
+                background-color: #d9a14e;
+                color:white; /* Darker gold on hover */
+                transform: translateY(-3px);
+            }
+        
+            @keyframes fadeIn {
+                from { opacity: 0; }
+                to { opacity: 1; }
+            }
+        
+            @keyframes slideIn {
+                from { transform: translateY(20px); opacity: 0; }
+                to { transform: translateY(0); opacity: 1; }
+            }
+        
+            @keyframes zoomIn {
+                from { transform: scale(0.9); opacity: 0; }
+                to { transform: scale(1); opacity: 1; }
+            }
+        
+            @keyframes fadeInUp {
+                from { opacity: 0; transform: translateY(20px); }
+                to { opacity: 1; transform: translateY(0); }
+            }
+        
+            @keyframes bounceIn {
+                from { transform: scale(0.9); opacity: 0; }
+                to { transform: scale(1); opacity: 1; }
+            }
+        </style>
+        </section>
+        <section id="system_requirements_section" class="system-requirements-section">
+            <div class="section-header">
+                <h2>System Requirements</h2>
+            </div>
+            
+            <div class="requirements-container">
+                <div class="requirements-card">
+                    <h3>Minimum Requirements</h3>
+                    <ul>
+                        <li><strong>OS:</strong> Windows 7 SP1 or newer</li>
+                        <li><strong>Processor:</strong> Intel Core i3 or AMD Equivalent</li>
+                        <li><strong>Memory:</strong> 3 GB RAM</li>
+                        <li><strong>Graphics:</strong> NVIDIA Geforce 210</li>
+                        <li><strong>DirectX:</strong> Version 11</li>
+                        <li><strong>Network:</strong> Broadband Internet connection</li>
+                        <li><strong>Storage:</strong> 2 GB available space</li>
+                        <li><strong>Sound Card:</strong> DirectX Compatible</li>
+                        <li><strong>Additional Notes:</strong> N/A</li>
+                    </ul>
+                </div>
+             
+            </div>
+            <style>
+           
+                #system_requirements_section{
+                    
+                }
+               
+                
+                .section-header {
+                    text-align: center;
+                    margin-bottom: 3rem;
+                    position: relative;
+                }
+                
+                .section-header h2 {
+                    font-size: 1.5rem;
+                    color: #c49c48; /* Gold color */
+                    margin: 0;
+                    
+                    font-family: 'Cinzel', serif; /* Classic Roman font */
+                    font-weight: 700;
+                    text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.7);
+                    position: relative;
+                    z-index: 1;
+                }
+                
+                .section-header::before, .section-header::after {
+                    content: '';
+                    position: absolute;
+                    top: 50%;
+                    width: 30%;
+                    height: 3px;
+                    background: #c49c48;
+                    z-index: 0;
+                }
+                
+                .section-header::before {
+                    left: 0;
+                }
+                
+                .section-header::after {
+                    right: 0;
+                }
+                
+                .requirements-container {
+                    display: flex;
+                    flex-wrap: wrap;
+                    gap: 2rem;
+                    justify-content: center;
+                }
+                
+                .requirements-card {
+                    /* Dark background with opacity */
+                    border-radius: 10px;
+                    
+                    width: 100vw;
+                    
+                    max-width: 500px;
+                    transition: transform 0.4s ease, box-shadow 0.4s ease;
+                  /* Gold border for cards */
+                    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.5);
+                }
+                
+                .requirements-card:hover {
+                    transform: translateY(-10px);
+                    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.7);
+                }
+                
+                .requirements-card h3 {
+                    font-size: 1.2rem;
+                    color: #c49c48; /* Gold color */
+                    margin-bottom: 1.5rem;
+                    font-family: 'Cinzel', serif;
+                    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
+                }
+                
+                .requirements-card ul {
+                    list-style: none;
+                    padding: 0;
+                    margin: 0;
+                }
+                
+                .requirements-card li {
+                    font-size: 1rem;
+                    color: #f0e6d2;
+                    margin: 1rem;
+                    display: flex;
+                    align-items: center;
+                }
+                
+                .requirements-card strong {
+                    color: #c49c48;
+                    width: 140px; /* Align text properly */
+                }
+                
+                .requirements-card ul li:last-child {
+                    margin-bottom: 0;
+                }
+                
+                .requirements-card li::before {
+                    content: '\1F52B'; /* Icon representing war or a sword */
+                    margin-right: 10px;
+                    font-size: 1.2rem;
+                    color: #c49c48;
+                }
+                
+                /* Responsive Design */
+                @media (max-width: 768px) {
+                    .requirements-container {
+                        flex-direction: column;
+                        align-items: center;
+                    }
+                }
+            </style>
+        </section>
+        <section>
+            <div class="chat-window" id="chat-window">
+                <div class="chat-header">
+                    Dandolf
+                    <button class="chat-close-btn" id="chat-close-btn">&times;</button>
+                </div>
+                <div class="chat-body" id="chat-body">
+                    <!-- Messages will be dynamically inserted here -->
+                </div>
+                <div class="chat-input-container">
+                    <input type="text" class="chat-input" id="chat-input" placeholder="Type a message...">
+                    <button class="chat-send-btn" id="send-btn">Send</button>
+                </div>
+            </div>
+    
+            <div class="chat-floating-btn moving-border" id="chat-btn">
+                <img src="https://c4.wallpaperflare.com/wallpaper/132/878/343/knight-video-games-armies-of-exigo-digital-art-wallpaper-preview.jpg"
+                    alt="Chat Icon">
+            </div>
+            <style>
+                /* Existing styles unchanged */
+                .chat-window {
+                    position: fixed;
+                    bottom: 20%;
+                    right: 20%;
+                    width: 360px;
+                    height: 450px;
+                    background: #1f1f1f;
+                    border-radius: 15px;
+                    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.7);
+                    transform: translateY(100%);
+                    transition: transform 0.4s ease, opacity 0.4s ease;
+                    opacity: 0;
+                    display: flex;
+                    flex-direction: column;
+                    overflow: hidden;
+                    z-index: 1000;
+                }
+    
+                .chat-window.open {
+                    transform: translateY(0);
+                    opacity: 1;
+                }
+    
+                .chat-header {
+                    background-image: url('https://imgs.search.brave.com/QqDAX68QaImCAPCagL5g9V30_4SXgzWqrfrtmnQ98Do/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9tZWRp/YS50ZW5vci5jb20v/RXk5LVFKVThmcGdB/QUFBTS9hdGUlQzUl/OUYuZ2lm.gif');
+                    background-size: cover;
+                    background-position: center;
+                    padding: 5px 0px;
+                    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+                    position: fixed;
+                    color: white;
+                    padding: 15px;
+                    text-align: center;
+                    font-weight: bold;
+                    position: relative;
+                    border-top-left-radius: 15px;
+                    border-top-right-radius: 15px;
+                }
+    
+                .chat-close-btn {
+                    position: absolute;
+                    right: 10px;
+                    top: 10px;
+                    background: #ffab40;
+                    border: none;
+                    border-radius: 50%;
+                    color: #000;
+                    width: 22px;
+                    height: 22px;
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    cursor: pointer;
+                    font-size: 14px;
+                }
+    
+                .chat-body {
+                    flex: 1;
+                    padding: 10px;
+                    background-image: url('https://c4.wallpaperflare.com/wallpaper/132/878/343/knight-video-games-armies-of-exigo-digital-art-wallpaper-preview.jpg');
+                    width: 100%;
+                    background-position: center;
+                    opacity: 0.9;
+                    overflow-y: auto;
+                }
+    
+                .chat-message {
+                    margin-bottom: 10px;
+                    display: flex;
+                    align-items: flex-start;
+                }
+    
+                .chat-message.user {
+                    justify-content: flex-end;
+                    margin-right: 15px;
+                }
+    
+                .chat-message p {
+                    background: #555;
+                    padding: 8px;
+                    color: white;
+                    border-radius: 8px;
+                    max-width: 75%;
+                    margin: 0;
+                }
+    
+                .chat-input-container {
+                    display: flex;
+                    border-top: 2px solid #ffab40;
+                    padding: 8px;
+                    background: #333;
+                }
+    
+                .chat-input {
+                    flex: 1;
+                    padding: 8px;
+                    border: none;
+                    border-radius: 8px;
+                    outline: none;
+                    background: #1e1e1e;
+                    color: #e0e0e0;
+                }
+    
+                .chat-send-btn {
+                    background: #ffab40;
+                    border: none;
+                    border-radius: 8px;
+                    color: #000;
+                    padding: 8px 12px;
+                    cursor: pointer;
+                    margin-left: 8px;
+                    font-size: 14px;
+                }
+    
+                .chat-floating-btn {
+                    position: fixed;
+                    bottom: 20px;
+                    left: 20px;
+                    width: 50px;
+                    height: 50px;
+                    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.5);
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    cursor: pointer;
+                    z-index: 1001;
+                }
+    
+                .chat-floating-btn:hover {
+                    scale: 1.1;
+                }
+    
+                .chat-floating-btn img {
+                    width: 100%;
+                    height: 100%;
+                }
+    
+                /* Thinking animation */
+                .thinking {
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                }
+    
+                .thinking span {
+                    display: inline-block;
+                    width: 8px;
+                    height: 8px;
+                    background-color: white;
+                    border-radius: 50%;
+                    margin: 0 2px;
+                    animation: thinking 1s infinite alternate;
+                }
+    
+                .thinking span:nth-child(2) {
+                    animation-delay: 0.2s;
+                }
+    
+                .thinking span:nth-child(3) {
+                    animation-delay: 0.4s;
+                }
+    
+                @keyframes thinking {
+                    to {
+                        transform: translateY(-10px);
+                        opacity: 0.5;
+                    }
+                }
+    
+                @media (max-width: 768px) {
+                    .chat-window {
+                        width: 70%;
+                        height: 60%;
+                        bottom: 20%;
+                        right: 10%;
+                    }
+    
+                    .chat-floating-btn {
+                        width: 45px;
+                        height: 45px;
+                    }
+                }
+    
+                @media (max-width: 480px) {
+                    .chat-window {
+                        width: 70%;
+                        height: 60%;
+                        bottom: 20%;
+                        right: 10%;
+                        border-radius: 0;
+                    }
+    
+                    .chat-close-btn {
+                        width: 18px;
+                        height: 18px;
+                        font-size: 12px;
+                    }
+    
+                    .chat-input-container {
+                        padding: 6px;
+                    }
+    
+                    .chat-send-btn {
+                        padding: 6px 10px;
+                        margin-left: 6px;
+                        font-size: 12px;
+                    }
+    
+                    .chat-floating-btn {
+                        width: 40px;
+                        height: 40px;
+                    }
+                }
+                
+            </style>
+    
+            <script>
+                document.addEventListener('DOMContentLoaded', () => {
+                    const chatBtn = document.getElementById('chat-btn');
+                    const chatWindow = document.getElementById('chat-window');
+                    const chatBody = document.getElementById('chat-body');
+                    const chatInput = document.getElementById('chat-input');
+                    const sendBtn = document.getElementById('send-btn');
+                    const chatCloseBtn = document.getElementById('chat-close-btn');
+    
+                    let isGuessingGameActive = false;
+                    let correctNumber = 0;
+    
+                    function toggleChatWindow() {
+                        chatWindow.classList.toggle('open');
+                        if (chatWindow.classList.contains('open')) {
+                            chatBody.scrollTop = chatBody.scrollHeight;
+                            greetUser();
+                        }
+                    }
+    
+                    function addMessage(type, text) {
+                        const messageElement = document.createElement('div');
+                        messageElement.classList.add('chat-message', type);
+                        const messageText = document.createElement('p');
+                        messageText.innerText = text;
+                        messageElement.appendChild(messageText);
+                        chatBody.appendChild(messageElement);
+                    }
+    
+                    function greetUser() {
+                        const greeting = "Greetings, noble warrior! I am Dandolf, at thy service. How may I assist thee in thy quest today? Here are some options:";
+                        const options = "\n1. Explore the games\n2. View the leaderboard\n3. Contact us\n4. Play a guessing game\n5. Hear a jest";
+                        addMessage('bot', greeting);
+                        addMessage('bot', options);
+                    }
+    
+                    function getBotResponse(userMessage) {
+                        if (isGuessingGameActive) {
+                            return handleGuessingGame(userMessage);
+                        }
+    
+                        const responses = {
+                            '1': 'Indeed, noble one! The games await thee. Visit the <a href="#">games section</a> to begin thy adventure.',
+                            '2': 'Behold the leaderboard! The greatest warriors are listed here. <a href="#">View leaderboard</a>.',
+                            '3': 'We art here to assist! Thou can reach us at support@gameworld.com.',
+                            '4': startGuessingGame(),
+                            '5': 'Why did the warrior refuse to fight the skeleton? He had no guts!'
+                        };
+    
+                        return responses[userMessage] || "I art not sure what thou mean. Please choose an option from 1 to 5.";
+                    }
+    
+                    function startGuessingGame() {
+                        correctNumber = Math.floor(Math.random() * 10) + 1;
+                        isGuessingGameActive = true;
+                        return 'Let us begin the guessing game! Guess a number between 1 and 10.';
+                    }
+    
+                    function handleGuessingGame(userMessage) {
+                        const guessedNumber = parseInt(userMessage, 10);
+    
+                        if (isNaN(guessedNumber)) {
+                            return "That is not a number, noble warrior. Please guess a number between 1 and 10.";
+                        }
+    
+                        if (guessedNumber === correctNumber) {
+                            isGuessingGameActive = false;
+                            return `Congratulations! Thou hast guessed correctly. The number was ${correctNumber}. Wouldst thou like to play again?`;
+                        } else if (guessedNumber < correctNumber) {
+                            return "Nay, the number is higher. Guess again!";
+                        } else {
+                            return "Nay, the number is lower. Guess again!";
+                        }
+                    }
+    
+                    function simulateThinking(callback) {
+                        const thinkingElement = document.createElement('div');
+                        thinkingElement.classList.add('chat-message', 'bot', 'thinking');
+                        thinkingElement.innerHTML = '<span></span><span></span><span></span>';
+                        chatBody.appendChild(thinkingElement);
+                        chatBody.scrollTop = chatBody.scrollHeight;
+    
+                        setTimeout(() => {
+                            chatBody.removeChild(thinkingElement);
+                            callback();
+                        }, 2000);
+                    }
+    
+                    sendBtn.addEventListener('click', () => {
+                        const userInput = chatInput.value.trim();
+                        if (userInput !== '') {
+                            addMessage('user', userInput);
+                            chatInput.value = '';
+    
+                            simulateThinking(() => {
+                                const botResponse = getBotResponse(userInput);
+                                addMessage('bot', botResponse);
+                                chatBody.scrollTop = chatBody.scrollHeight;
+                            });
+                        }
+                    });
+    
+                    chatInput.addEventListener('keypress', (e) => {
+                        if (e.key === 'Enter') {
+                            sendBtn.click();
+                        }
+                    });
+    
+                    chatBtn.addEventListener('click', toggleChatWindow);
+                    chatCloseBtn.addEventListener('click', toggleChatWindow);
+                });
+            </script>
+        </section>
+
+        <!-- footer section code start here  -->
+        <footer class="royal-footer">
+            <div class="scrolling-banner">
+                <div class="scrolling-text">Victory Awaits Those Who Dare | Prepare for Battle | Rule the Kingdom</div>
+            </div>
+            <div class="footer-content">
+                <div class="footer-left">
+                    <h3>Realm of Legends</h3>
+                    <p>Forge your legacy in the heat of battle and rise to greatness.</p>
+                    <ul class="social-icons">
+                        <li><a href="#"><ion-icon name="logo-facebook"></ion-icon></a></li>
+                        <li><a href="#"><ion-icon name="logo-twitter"></ion-icon></a></li>
+                        <li><a href="#"><ion-icon name="logo-instagram"></ion-icon></a></li>
+                        <li><a href="#"><ion-icon name="logo-linkedin"></ion-icon></a></li>
+                    </ul>
+                </div>
+                <div class="footer-right">
+                    <h3>Subscribe to Our Newsletter</h3>
+                    <form class="subscribe-form" action="{{ url_for('subscription') }}" method="POST">
+                        <input type="email" name="email" placeholder="Enter your email" required>
+                        <button type="submit">Subscribe</button>
+                    </form>
+
+                    <p>Email: warlord@ancientrealm.com</p>
+                    <p>Phone: +123 456 7890</p>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>© 2024 Ancient Realm. All rights reserved.</p>
+            </div>
+
+            <style>
+                @import url("https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&display=swap");
+
+                .royal-footer {
+                    background-color: #2f1e1e;
+                    color: #e0c097;
+                    padding: 40px 20px;
+                    text-align: center;
+
+                    position: relative;
+                    border-top: 2px solid #5b4535;
+                }
+
+                .scrolling-banner {
+                    background-color: #3d2d2d;
+                    padding: 10px 0;
+                    overflow: hidden;
+                }
+
+                .scrolling-text {
+                    white-space: nowrap;
+                    display: inline-block;
+                    animation: scrollText 15s linear infinite;
+                    font-size: 18px;
+                    font-weight: bold;
+                    letter-spacing: 1px;
+                }
+
+                @keyframes scrollText {
+                    from {
+                        transform: translateX(100%);
+                    }
+
+                    to {
+                        transform: translateX(-100%);
+                    }
+                }
+
+                .footer-content {
+                    display: flex;
+                    justify-content: space-around;
+                    flex-wrap: wrap;
+                    margin-bottom: 20px;
+                    padding-top: 20px;
+                    border-top: 1px solid #5b4535;
+                }
+
+                .footer-left,
+                .footer-right {
+                    flex: 1;
+                    margin: 10px;
+                    max-width: 400px;
+                }
+
+                .footer-left h3,
+                .footer-right h3 {
+                    font-size: 22px;
+                    margin-bottom: 10px;
+                }
+
+                .footer-left p,
+                .footer-right p {
+                    font-size: 16px;
+                }
+
+                .social-icons {
+                    list-style: none;
+                    padding: 0;
+                    display: flex;
+                    justify-content: center;
+                    margin-top: 10px;
+                }
+
+                .social-icons li {
+                    margin: 0 10px;
+                }
+
+                .social-icons li a {
+                    color: #e0c097;
+                    font-size: 24px;
+                    transition: color 0.3s ease;
+                }
+
+                .social-icons li a:hover {
+                    color: #ffda79;
+                }
+
+                .subscribe-form {
+                    display: flex;
+                    margin-top: 10px;
+                }
+
+                .subscribe-form input[type="email"] {
+                    padding: 10px;
+                    border: none;
+                    border-radius: 5px 0 0 5px;
+                    flex: 1;
+
+                }
+
+                .subscribe-form button {
+                    padding: 10px 20px;
+                    border: none;
+                    border-radius: 0 5px 5px 0;
+                    background-color: #5b4535;
+                    color: #fff;
+                    cursor: pointer;
+
+                    transition: background-color 0.3s ease;
+                }
+
+                .subscribe-form button:hover {
+                    background-color: #3d2d2d;
+                }
+
+                .footer-bottom {
+                    border-top: 1px solid #5b4535;
+                    padding-top: 10px;
+                    font-size: 14px;
+                    letter-spacing: 1px;
+                }
+
+                /* Add smooth transitions to links */
+                a {
+                    color: #f4f4f4;
+                    text-decoration: none;
+                    transition: color 0.3s;
+                }
+
+
+
+
+                a:hover {
+                    color: #d4af37;
+                }
+
+                /* Animation for the footer */
+                .royal-footer {
+                    animation: fadeInFooter 1s ease-in-out;
+                }
+
+                @keyframes fadeInFooter {
+                    from {
+                        opacity: 0;
+                    }
+
+                    to {
+                        opacity: 1;
+                    }
+                }
+
+                /* Responsive Design */
+                @media (max-width: 768px) {
+                    .footer-content {
+                        flex-direction: column;
+                    }
+
+                    .footer-left,
+                    .footer-right {
+                        max-width: 100%;
+                    }
+                }
+            </style>
+
+            <script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
+            <script nomodule src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"></script>
+        </footer>
+        <!-- footer section code ends here -->
+
+
+
+        <a href="https://wa.me/7291037897" class="whatsapp-float" target="_blank">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512">
+                <path
+                    d="M380.9 97.1C339.4 55.6 282.3 32 221.1 32 100.2 32 4 127.6 4 248c0 43.2 11.7 85.1 34 122L0 512l146.1-38.1c35.3 19.5 74.7 29.8 114.9 29.8h.1c121.1 0 217.9-95.8 218.9-213.8.5-60.1-23.3-116.6-65.1-158.8zM221.1 438.5c-35 0-69.3-9.4-99.2-27.3l-7.1-4.2-87.1 22.7 23.2-84.6-4.4-7.2c-20.9-33.6-32-72.5-32-112.9C14.5 145.8 109.2 54.7 221.1 54.7c54.2 0 105.2 21.1 143.6 59.4 38.4 38.4 59.5 89.5 59 143.9-.9 109.7-91.3 197.1-202.6 180.5zM322.1 316c-5.5-2.7-32.5-16-37.5-17.8-5.1-1.8-8.8-2.7-12.5 2.7-3.6 5.5-14.3 17.8-17.5 21.4-3.2 3.6-6.4 4.1-11.8 1.4-5.5-2.7-23.1-8.5-44-27-16.3-14.6-27.3-32.7-30.5-38.2-3.2-5.5-.4-8.5 2.4-11.2 2.5-2.6 5.5-6.4 8.2-9.6 2.7-3.2 3.6-5.5 5.5-9.1 1.8-3.6 .9-6.8-.5-9.6-1.4-2.7-12.5-30-17.1-40.9-4.5-10.9-9.1-9.4-12.5-9.6-3.2-.2-6.8-.2-10.5-.2-3.6 0-9.6 1.4-14.6 6.8-5 5.5-19.1 18.6-19.1 45.4 0 26.8 19.5 52.7 22.2 56.4 2.7 3.6 38.4 58.7 93.1 82.3 13 5.6 23.2 8.9 31.1 11.4 13.1 4.1 25.1 3.5 34.6 2.1 10.5-1.6 32.5-13.2 37.1-26 4.6-12.8 4.6-23.7 3.2-26.1-1.4-2.3-5-3.7-10.5-6.4z" />
+            </svg>
+            <style>
+                /* Style for the floating WhatsApp button */
+                .whatsapp-float {
+                    position: fixed;
+                    width: 50px;
+                    height: 50px;
+                    bottom: 22px;
+                    right: 10px;
+                    color: white;
+                    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
+                    z-index: 1000;
+                    cursor: pointer;
+
+
+                }
+
+                .whatsapp-float svg {
+                    width: 36px;
+                    height: 36px;
+                    color: white;
+                    margin-top: 17px;
+                    fill: white;
+                }
+            </style>
+        </a>
+        <section id="medieval-cookie-banner-section">
+            <style>
+              
+        
+             
+        
+             
+        
+                #cookie-banner {
+                    position: fixed;
+                    bottom: 0;
+                    left: 0;
+                    right: 0;
+                    background: rgba(0, 0, 0, 0.9);
+                    color: white;
+                    text-align: center;
+                    padding: 20px;
+                    box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.5);
+                    z-index: 1000;
+                    display: none; /* Hidden initially */
+                }
+        
+                .medieval-banner-content {
+                    display: flex;
+                    flex-wrap: wrap;
+                    justify-content: space-between;
+                    align-items: center;
+                    max-width: 1200px;
+                    margin: 0 auto;
+                }
+        
+                .medieval-banner-link {
+                    color: white;
+                    text-decoration: underline;
+                    font-weight: bold;
+                    cursor: pointer;
+                }
+        
+                .medieval-banner-buttons {
+                    display: flex;
+                    gap: 10px;
+                    flex-shrink: 0;
+                }
+        
+                .medieval-banner-button {
+                    padding: 10px 20px;
+                    background-color: white;
+                    border: 2px solid black;
+                    border-radius: 5px;
+                    color: black;
+                    cursor: pointer;
+                    transition: background-color 0.3s;
+                    font-family: 'MedievalSharp', serif;
+                }
+        
+                .medieval-banner-button:hover {
+                    background-color: black;
+                    color: white;
+                }
+        
+                /* Responsive Styles */
+                @media (max-width: 768px) {
+                    .cookie-banner .medieval-banner-content {
+                        flex-direction: column;
+                        align-items: flex-start;
+                    }
+        
+                    .medieval-banner-buttons {
+                        margin-top: 10px;
+                        justify-content: center;
+                        width: 100%;
+                    }
+        
+                    .medieval-banner-button {
+                        width: 100%;
+                        text-align: center;
+                    }
+                }
+        
+                /* Modal Styles */
+                #medieval-modal {
+                    display: none; /* Hidden initially */
+                    position: fixed;
+                    top: 50%;
+                    left: 50%;
+                    transform: translate(-50%, -50%);
+                    z-index: 2000;
+                    background: white;
+                    padding: 20px;
+                    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+                    border-radius: 8px;
+                    max-width: 500px;
+                    width: 100%;
+                    color: black;
+                    font-family: 'MedievalSharp', serif;
+                }
+        
+                .medieval-modal-header {
+                    font-size: 1.5rem;
+                    margin-bottom: 15px;
+                }
+        
+                .medieval-modal-body {
+                    font-size: 1rem;
+                    margin-bottom: 15px;
+                }
+        
+                .medieval-modal-close {
+                    background-color: black;
+                    border: 2px solid white;
+                    padding: 10px 20px;
+                    color: white;
+                    border-radius: 5px;
+                    cursor: pointer;
+                    float: right;
+                    font-family: 'MedievalSharp', serif;
+                }
+        
+                .medieval-modal-close:hover {
+                    background-color: white;
+                    color: black;
+                }
+        
+                /* Overlay */
+                #medieval-overlay {
+                    display: none;
+                    position: fixed;
+                    top: 0;
+                    left: 0;
+                    right: 0;
+                    bottom: 0;
+                    background: rgba(0, 0, 0, 0.7);
+                    z-index: 1500;
+                }
+            </style>
+        
+            <div id="cookie-banner" class="cookie-banner">
+                <div class="medieval-banner-content">
+                    <p>
+                        We use cookies to enhance your royal experience. By continuing to use this site, you consent to our
+                        <span id="terms-link" class="medieval-banner-link">Terms of Service</span> and
+                        <span id="privacy-link" class="medieval-banner-link">Privacy Policy</span>.
+                    </p>
+                    <div class="medieval-banner-buttons">
+                        <button id="accept-cookies" class="medieval-banner-button">Accept</button>
+                        <button id="close-banner" class="medieval-banner-button">Close</button>
+                    </div>
+                </div>
+            </div>
+        
+            <!-- Modal -->
+            <div id="medieval-modal" class="modal">
+                <div class="medieval-modal-header">Terms and Conditions</div>
+                <div class="medieval-modal-body">
+                    <p>Your terms and conditions go here. You can list your policies, rules, and more information for users.</p>
+                    <p>Include details about cookies, user data, privacy policies, etc.</p>
+                </div>
+                <button id="close-medieval-modal" class="medieval-modal-close">Close</button>
+            </div>
+        
+            <!-- Overlay -->
+            <div id="medieval-overlay"></div>
+        
+            <script>
+                document.addEventListener('DOMContentLoaded', function () {
+                    const banner = document.getElementById('cookie-banner');
+                    const acceptBtn = document.getElementById('accept-cookies');
+                    const closeBannerBtn = document.getElementById('close-banner');
+                    const termsLink = document.getElementById('terms-link');
+                    const termsModal = document.getElementById('medieval-modal');
+                    const overlay = document.getElementById('medieval-overlay');
+                    const closeModalBtn = document.getElementById('close-medieval-modal');
+        
+                    // Always show banner if cookies are not accepted
+                    if (!localStorage.getItem('cookiesAccepted')) {
+                        banner.style.display = 'block';
+                    }
+        
+                    acceptBtn.addEventListener('click', function () {
+                        localStorage.setItem('cookiesAccepted', 'true');
+                        banner.style.display = 'none';
+                    });
+        
+                    closeBannerBtn.addEventListener('click', function () {
+                        banner.style.display = 'none';
+                    });
+        
+                    termsLink.addEventListener('click', function () {
+                        termsModal.style.display = 'block';
+                        overlay.style.display = 'block';
+                    });
+        
+                    closeModalBtn.addEventListener('click', function () {
+                        termsModal.style.display = 'none';
+                        overlay.style.display = 'none';
+                    });
+        
+                    overlay.addEventListener('click', function () {
+                        termsModal.style.display = 'none';
+                        overlay.style.display = 'none';
+                    });
+                });
+            </script>
+        </section>
+    </div>
+    <!-- website data ends here -->
+
+
+    <!-- extra codes top button, social media side bar,login pop up banner, about section live color css -->
+    <div class="extra">
+
+
+
+
+
+
+
+
+        <!-- about me gradient color style  -->
+        <style>
+            @property --angle {
+                syntax: "<angle>";
+                initial-value: 0deg;
+                inherits: false;
+            }
+
+
+            .moving-border::before,
+            .moving-border::after {
+                content: "";
+                position: absolute;
+                inset: -0.2rem;
+                z-index: -1;
+                background: linear-gradient(var(--angle),
+                        #3382a1, #0d66e1, #b00);
+                animation: rotate 10s linear infinite;
+            }
+
+            .moving-border::after {
+                filter: blur(10px);
+            }
+
+            @keyframes rotate {
+                0% {
+                    --angle: 0deg;
+                }
+
+                100% {
+                    --angle: 360deg;
+                }
+            }
+        </style>
+        <!-- ends here gradient live color of about setion image -->
+
+
+
+
+
+
+
+    </div>
+</body>
+
+</html>

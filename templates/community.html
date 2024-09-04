@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Community Chat</title>
+    <link href="https://fonts.googleapis.com/css2?family=MedievalSharp:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        /* Global Styles */
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            width: 100vw;
+            height: 100vh;
+            background-color: #121212; /* Dark background */
+            color: #e0e0e0; /* Light text color */
+        }
+
+        /* Full-page Chat Styles */
+        .chat-container {
+            display: flex;
+            flex-direction: column;
+            height: 100vh; /* Full height for desktop */
+            max-width: 100%;
+            margin: 0 auto;
+            background: rgba(33, 33, 33, 0.9); /* Slightly transparent dark background */
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.36);
+            backdrop-filter: blur(8px); /* Adds blur effect */
+        }
+
+        .chat-header {
+            background: #1e1e1e; /* Darker header background */
+            color: #24a0ed; /* Purple color */
+            padding: 20px;
+            font-size: 1.8rem;
+            font-weight: bold;
+            border-bottom: 2px solid #24a0ed;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .chat-header .chat-title {
+            font-size: 1.5rem;
+        }
+
+        .chat-header .connected-users {
+            font-size: 1.1rem;
+            color: #24a0ed; /* Teal color */
+        }
+
+        #chat {
+            flex: 1;
+            overflow-y: auto;
+            padding: 15px;
+            background-color: #121212; /* Dark background */
+        }
+
+        #chat p {
+            margin: 10px 0;
+            padding: 12px 15px;
+            background: rgba(40, 40, 40, 0.8); /* Slightly transparent background */
+            border-radius: 8px;
+            font-size: 1.1rem;
+            max-width: 80%;
+            display: flex;
+            align-items: center;
+            position: relative;
+            border: 1px solid #24a0ed; /* Purple border color */
+            color: #e0e0e0; /* Light text color */
+        }
+
+        #chat p strong {
+            color: #24a0ed;
+            margin-right: 10px;
+        }
+
+        #chat p .timestamp {
+            font-size: 0.75rem;
+            color: #888;
+            margin-left: auto;
+            position: absolute;
+            right: 10px;
+            bottom: 5px;
+        }
+
+        /* Message Form Styles */
+        #message-form {
+            display: flex;
+            padding: 15px;
+            background-color: #1e1e1e; /* Dark background */
+            border-top: 1px solid #24a0ed;
+            box-shadow: 0 -4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        #message {
+            padding: 12px;
+            width: 100%;
+            border: 1px solid #24a0ed;
+            border-radius: 5px;
+            font-size: 1.1rem;
+            background-color: rgba(33, 33, 33, 0.9);
+            color: #e0e0e0; /* Light text color */
+        }
+
+        #message-form button {
+            padding: 12px 20px;
+            background: #24a0ed; /* Teal color */
+            border: none;
+            margin-left: 10px;
+            color: #121212;
+            font-size: 1.1rem;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        #message-form button:hover {
+            background-color: #24a0ed;
+            transform: translateY(-2px);
+        }
+
+        /* Typing Indicator Styles */
+        #typing-indicator {
+            font-style: italic;
+            color: #24a0ed; /* Teal color */
+            margin: 10px 15px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            transition: opacity 0.3s ease;
+        }
+
+        /* Responsive Styles */
+        @media (max-width: 768px) {
+            .chat-container {
+                height: 100vh; /* Full height for mobile */
+            }
+
+            #message-form {
+                flex-direction: row;
+            }
+
+            #message {
+                width: 100%; /* Full width for input */
+            }
+
+            #message-form button {
+                width: 30%; /* Full width for button */
+            
+               
+                margin-top: 10px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Main Chat Section -->
+    <section id="chat-section">
+        <div class="chat-container">
+            <div class="chat-header">
+                <div class="chat-title">Community Chat</div>
+                <div class="connected-users" id="connected-users">0 members online</div>
+            </div>
+            <div id="chat"></div>
+            <div id="typing-indicator"></div>
+            <form id="message-form">
+                <!-- Removed the username input box -->
+                <input type="text" id="message" placeholder="Type a message..." required>
+                <button type="submit">Send</button>
+            </form>
+        </div>
+    </section>
+
+    <script src="https://cdn.socket.io/4.0.1/socket.io.min.js"></script>
+    <script>
+        const socket = io();
+        const chat = document.getElementById('chat');
+        const typingIndicator = document.getElementById('typing-indicator');
+        const connectedUsers = document.getElementById('connected-users');
+
+        // Load previous messages when the user connects
+        socket.on('loadMessages', function (messages) {
+            messages.forEach(data => {
+                displayMessage(data);
+            });
+        });
+
+        // Update user count when received from server
+        socket.on('connectedUsers', function (count) {
+            connectedUsers.innerText = `${count} members online`;
+        });
+
+        // Display incoming messages
+        socket.on('message', function (data) {
+            displayMessage(data);
+        });
+
+        function displayMessage(data) {
+            const timestamp = new Date().toLocaleTimeString();
+            const messageHtml = `
+                <p>
+                    <strong>${data.user}:</strong>
+                    <span class="message-content">${data.message}</span>
+                    <span class="timestamp">${timestamp}</span>
+                </p>`;
+            chat.innerHTML += messageHtml;
+            chat.scrollTop = chat.scrollHeight; // Auto-scroll to the bottom
+        }
+
+        // Display typing indicator
+        socket.on('typing', function (user) {
+            typingIndicator.innerText = `${user} is typing...`;
+            clearTimeout(typingIndicator.timeout);
+            typingIndicator.timeout = setTimeout(() => {
+                typingIndicator.innerText = '';
+            }, 3000);
+        });
+
+        // Handle form submission
+        document.getElementById('message-form').addEventListener('submit', function (e) {
+            e.preventDefault();
+            const message = document.getElementById('message').value;
+            if (message) {
+                const username = '{{ current_user.username }}'; // Use Flask variable for username
+                socket.send({ user: username, message: message });
+                document.getElementById('message').value = ''; // Clear input
+            }
+        });
+
+        // Emit typing event
+        document.getElementById('message').addEventListener('input', function () {
+            const username = '{{ current_user.username }}'; // Use Flask variable for username
+            if (username) {
+                socket.emit('typing', username);
+            }
+        });
+
+        // Emit event when the user connects
+        socket.emit('userConnected');
+
+        // Emit event when the user disconnects
+        window.addEventListener('beforeunload', () => {
+            socket.emit('userDisconnected');
+        });
+    </script>
+</body>
+
+</html>

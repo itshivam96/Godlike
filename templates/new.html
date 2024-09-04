@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Community Chat</title>
+    <style>
+        /* Global Styles */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f9;
+        }
+
+        /* Chat Container Styles */
+        #chat_menu_section {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .chat-container {
+            width: 100%;
+            max-width: 600px;
+            background: #fff;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            height: 80vh;
+        }
+
+        .chat-header {
+            background-color: #007bff;
+            color: #fff;
+            padding: 15px;
+            text-align: center;
+            font-size: 1.5rem;
+            font-weight: bold;
+            border-bottom: 2px solid #0056b3;
+        }
+
+        #chat {
+            flex: 1;
+            overflow-y: auto;
+            padding: 15px;
+            background-color: #f9f9f9;
+            border-bottom: 1px solid #eee;
+            word-wrap: break-word;
+            display: flex;
+            flex-direction: column;
+        }
+
+        #chat p {
+            margin: 10px 0;
+            padding: 10px;
+            background: #e9ecef;
+            border-radius: 5px;
+            font-size: 0.9rem;
+            word-wrap: break-word;
+            max-width: 80%;
+            display: flex;
+            align-items: center;
+        }
+
+        #chat p strong {
+            color: #007bff;
+            margin-right: 10px;
+        }
+
+        #chat p .timestamp {
+            font-size: 0.75rem;
+            color: #888;
+            margin-left: auto;
+        }
+
+        /* Message Form Styles */
+        #message-form {
+            display: flex;
+            padding: 10px;
+            background-color: #fff;
+            border-top: 1px solid #eee;
+        }
+
+        #user, #message {
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 1rem;
+        }
+
+        #user {
+            width: 30%;
+            margin-right: 10px;
+        }
+
+        #message {
+            flex: 1;
+        }
+
+        #message-form button {
+            padding: 10px 15px;
+            margin-left: 10px;
+            background-color: #007bff;
+            border: none;
+            color: #fff;
+            font-size: 1rem;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        #message-form button:hover {
+            background-color: #0056b3;
+        }
+
+        /* Typing Indicator Styles */
+        #typing-indicator {
+            font-style: italic;
+            color: #777;
+            margin: 10px 15px;
+        }
+    </style>
+</head>
+<body>
+    <section id="chat_menu_section">
+        <div class="chat-container">
+            <div class="chat-header">
+                Community Chat
+            </div>
+            <div id="chat"></div>
+            <div id="typing-indicator"></div>
+            <form id="message-form">
+                <input type="text" id="user" placeholder="Username" required>
+                <input type="text" id="message" placeholder="Type your message..." required>
+                <button type="submit">Send</button>
+            </form>
+        </div>
+    </section>
+
+    <script src="https://cdn.socket.io/4.0.1/socket.io.min.js"></script>
+    <script>
+        const socket = io();
+        const chat = document.getElementById('chat');
+
+        socket.on('response', function(data) {
+            const timestamp = new Date().toLocaleTimeString();
+            chat.innerHTML += `<p><strong>${data.user}:</strong> ${data.message} <span class="timestamp">${timestamp}</span></p>`;
+            chat.scrollTop = chat.scrollHeight; // Auto-scroll to the bottom
+        });
+
+        socket.on('typing', function(user) {
+            document.getElementById('typing-indicator').innerText = `${user} is typing...`;
+            setTimeout(() => {
+                document.getElementById('typing-indicator').innerText = '';
+            }, 3000);
+        });
+
+        document.getElementById('message-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const user = document.getElementById('user').value;
+            const message = document.getElementById('message').value;
+            if (user && message) {
+                socket.send({user: user, message: message});
+                document.getElementById('message').value = ''; // Clear input
+            }
+        });
+
+        document.getElementById('message').addEventListener('input', function() {
+            const user = document.getElementById('user').value;
+            if (user) {
+                socket.emit('typing', user);
+            }
+        });
+    </script>
+</body>
+</html>

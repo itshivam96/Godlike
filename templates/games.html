@@ -1,0 +1,206 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Knights and Legends</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div id="game">
+        <h1>Knights and Legends</h1>
+        <div id="game-container">
+            <div id="hero">
+                <h2>Hero</h2>
+                <p id="hero-status">Health: 100 | Attack: 15</p>
+                <button id="attack">Attack</button>
+                <button id="heal">Heal</button>
+                <button id="special-attack">Special Attack</button>
+            </div>
+            <div id="enemy-container">
+                <h2>Enemies</h2>
+                <div id="enemy-list"></div>
+            </div>
+        </div>
+        <div id="log">
+            <h3>Battle Log</h3>
+            <ul id="log-list"></ul>
+        </div>
+    </div>
+    <style>
+        /* styles.css */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #e0e0e0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+}
+
+#game {
+    width: 90%;
+    max-width: 900px;
+    background: #fff;
+    border-radius: 10px;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+    padding: 20px;
+    text-align: center;
+}
+
+#game-container {
+    display: flex;
+    justify-content: space-around;
+    margin-bottom: 20px;
+}
+
+#hero, #enemy-container {
+    background: #f8f8f8;
+    padding: 15px;
+    border-radius: 10px;
+    width: 45%;
+}
+
+#hero button {
+    background: #28a745;
+    color: #fff;
+    border: none;
+    padding: 10px;
+    border-radius: 5px;
+    margin: 5px;
+    cursor: pointer;
+}
+
+#heal {
+    background: #007bff;
+}
+
+#special-attack {
+    background: #dc3545;
+}
+
+#enemy-list {
+    list-style: none;
+    padding: 0;
+    text-align: left;
+}
+
+#log {
+    background: #f1f1f1;
+    padding: 15px;
+    border-radius: 10px;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+}
+
+#log-list {
+    list-style: none;
+    padding: 0;
+    text-align: left;
+}
+
+    </style>
+    <script>
+        // script.js
+document.addEventListener('DOMContentLoaded', () => {
+    const hero = {
+        health: 100,
+        attack: 15,
+        specialAttack: 30,
+        healAmount: 20,
+    };
+
+    const enemies = [
+        { name: 'Dragon', health: 80, attack: 10 },
+        { name: 'Sorcerer', health: 60, attack: 12 },
+    ];
+
+    const logList = document.getElementById('log-list');
+    const heroStatus = document.getElementById('hero-status');
+    const enemyList = document.getElementById('enemy-list');
+
+    function updateUI() {
+        heroStatus.textContent = `Health: ${hero.health} | Attack: ${hero.attack}`;
+        enemyList.innerHTML = '';
+        enemies.forEach((enemy, index) => {
+            const enemyItem = document.createElement('div');
+            enemyItem.textContent = `${enemy.name} - Health: ${enemy.health}`;
+            enemyItem.classList.add('enemy');
+            enemyList.appendChild(enemyItem);
+        });
+    }
+
+    function addLog(message) {
+        const logItem = document.createElement('li');
+        logItem.textContent = message;
+        logList.appendChild(logItem);
+    }
+
+    function attackEnemy(index) {
+        if (index < 0 || index >= enemies.length) return;
+        const enemy = enemies[index];
+        enemy.health -= hero.attack;
+        addLog(`Hero attacks ${enemy.name}! ${enemy.name}'s health is now ${enemy.health}.`);
+        
+        if (enemy.health <= 0) {
+            addLog(`${enemy.name} is defeated!`);
+            enemies.splice(index, 1); // Remove defeated enemy
+            if (enemies.length === 0) {
+                addLog('All enemies are defeated! You win!');
+                document.getElementById('attack').disabled = true;
+                document.getElementById('heal').disabled = true;
+                document.getElementById('special-attack').disabled = true;
+            }
+        } else {
+            enemyCounterAttack();
+        }
+        updateUI();
+    }
+
+    function enemyCounterAttack() {
+        enemies.forEach(enemy => {
+            if (enemy.health > 0) {
+                hero.health -= enemy.attack;
+                addLog(`${enemy.name} attacks back! Hero's health is now ${hero.health}.`);
+                
+                if (hero.health <= 0) {
+                    hero.health = 0;
+                    addLog("Hero is defeated! Game over.");
+                    document.getElementById('attack').disabled = true;
+                    document.getElementById('heal').disabled = true;
+                    document.getElementById('special-attack').disabled = true;
+                }
+            }
+        });
+        updateUI();
+    }
+
+    function healHero() {
+        hero.health += hero.healAmount;
+        addLog(`Hero heals! Health is now ${hero.health}.`);
+        enemyCounterAttack();
+        updateUI();
+    }
+
+    function specialAttackEnemy() {
+        if (enemies.length > 0) {
+            attackEnemy(0); // Attack first enemy with special attack
+            addLog(`Hero uses special attack!`);
+        }
+    }
+
+    document.getElementById('attack').addEventListener('click', () => {
+        if (enemies.length > 0) {
+            attackEnemy(0); // Attack first enemy
+        }
+    });
+
+    document.getElementById('heal').addEventListener('click', healHero);
+    document.getElementById('special-attack').addEventListener('click', specialAttackEnemy);
+
+    updateUI();
+});
+
+    </script>
+    <script src="script.js"></script>
+</body>
+</html>
